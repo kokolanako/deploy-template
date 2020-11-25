@@ -8,7 +8,7 @@ pipeline {
     environment {
         KISTERS_DOCKER_HOME = "/opt/kisters/docker"
         BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/${JOB_NAME}/${BUILD_NUMBER}/console"
-        EMAL_TO = "Polina.Mrachkovskaya@kisters.de"
+        EMAIL_TO = "Polina.Mrachkovskaya@kisters.de"
 
     }
 
@@ -131,7 +131,7 @@ pipeline {
                 script {
                     def input = input message: 'User input required',
                             parameters: [choice(name: 'inputC', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
-                    if ("${inputC}" == 'NO') {
+                    if (input == 'NO') {
                         error "The build was stopped by ${username}"
                     }
 
