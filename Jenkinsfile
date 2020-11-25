@@ -105,7 +105,7 @@ pipeline {
         }
         stage('Send Email') {
             steps {
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com", recipientProviders: [developers()],
+                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
                         body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
             }
         }
@@ -130,8 +130,8 @@ pipeline {
 
                 script {
                     def input = input message: 'User input required',
-                            parameters: [choice(name: 'Promote to production', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
-                    if (input == 'Stop') {
+                            parameters: [choice(name: 'inputC', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
+                    if ("${inputC}" == 'Stop') {
                         error "The build was stopped by ${username}"
                     }
 
@@ -178,7 +178,7 @@ pipeline {
         failure {
             script {
 
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com", recipientProviders: [developers()],
+                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
                         body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
             }
         }
