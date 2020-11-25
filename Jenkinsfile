@@ -124,6 +124,26 @@ pipeline {
 
         }
 
+        stage('Test on PROD-SERVER') {
+            steps {
+                script {
+                    retry(3) {// if fails then retries again
+
+                        withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
+                            sleep(4)
+                            def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-prod:8081/test?country=Aus' -o /dev/null", returnStdout: true)
+                            echo statusCode
+//                        println statusCode.getClass()
+                            if (statusCode != "200") {
+                                error "Curl command was not successful, it delivered status code ${statusCode}"
+                            }
+                        }
+                    }
+//                    http://localhost:8081/rest/data?country=Aus&sector=private&year=2018
+                }
+            }
+        }
+
     }
 //    post{
 //        always{
