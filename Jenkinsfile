@@ -5,6 +5,9 @@ pipeline {
             customWorkspace "jenkins-workspace/${JOB_NAME}/${BUILD_NUMBER}"
         }
     }
+    environment{
+        KISTERS_DOCKER_HOME="/opt/kisters/docker"
+    }
 
     parameters {
         // choice(name:'MS', choices:['ms1','ms2'],description:'Pick the microservice to deploy')
@@ -67,7 +70,7 @@ pipeline {
                     sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
                     stash includes: '.env', name: 'env'
                     stash includes: 'docker-compose.yml', name: 'compose'
-                    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf /opt/kisters/docker/yay && mkdir /opt/kisters/docker/yay'"
+                    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
                     sh "scp -i $test .env root@en-cdeval-test:/opt/kisters/docker/yay"
                     sh "scp -i $test docker-compose.yml root@en-cdeval-test:/opt/kisters/docker/yay"
                     sh "ssh -i $test -T root@en-cdeval-test 'cd /opt/kisters/docker/yay && docker-compose down && docker-compose up -d'"
@@ -103,18 +106,19 @@ pipeline {
                     customWorkspace "jenkins-workspace/${JOB_NAME}/${BUILD_NUMBER}"
                 }
             }
-            steps{
-                sh 'pwd'
-                sh 'ls -la' //woher hat -l-2 .env?
-                unstash 'env'
-                unstash 'compose'
-                withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
-                    sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf /opt/yay && mkdir -p /opt/kisters/docker/yay'"
-                    sh "scp -i $test .env root@en-cdeval-prod:/opt/yay"
-                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:/opt/yay"
-                    sh "ssh -i $test -T root@en-cdeval-prod 'cd /opt/yay && docker-compose down && docker-compose up -d'"
-                }
-            }
+//            steps{
+//                sh 'pwd'
+//                sh 'ls -la' //woher hat -l-2 .env?
+//                unstash 'env'
+//                unstash 'compose'
+//                withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
+//
+//                    sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf /opt/kisters/docker/yay && mkdir -p /opt/kisters/docker/yay'"
+//                    sh "scp -i $test .env root@en-cdeval-prod:/opt/yay"
+//                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:/opt/yay"
+//                    sh "ssh -i $test -T root@en-cdeval-prod 'cd /opt/yay && docker-compose down && docker-compose up -d'"
+//                }
+//            }
 
         }
 

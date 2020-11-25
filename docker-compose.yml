@@ -6,4 +6,4 @@ services:
     image: "${IMAGE_NAME}"
     ports:
       - 8081:8081
-    build: .
+
