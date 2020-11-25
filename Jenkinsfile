@@ -78,8 +78,7 @@ pipeline {
                     retry(3) {// if fails then retries again
 
                         withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
-
-                            sleep(4)//retry
+                            sleep(4)
                             def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
                             echo statusCode
 //                        println statusCode.getClass()
@@ -97,9 +96,15 @@ pipeline {
                 label 'en-jenkins-l-2'
             }
             steps{
-                sh 'ls -la'
+                sh 'ls -la' //woher hat -l-2 .env?
                 unstash 'env'
                 unstash 'compose'
+                withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
+                    sh "ssh -i $test -T root@en-cdeval-prod 'rm -rf /opt/kisters/docker/yay && mkdir /opt/kisters/docker/yay'"
+                    sh "scp -i $test .env root@en-cdeval-prod:/opt/kisters/docker/yay"
+                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:/opt/kisters/docker/yay"
+                    sh "ssh -i $test -T root@en-cdeval-prod 'cd /opt/kisters/docker/yay && docker-compose down && docker-compose up -d'"
+                }
             }
 
         }
