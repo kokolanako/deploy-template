@@ -99,6 +99,7 @@ pipeline {
                 label 'en-jenkins-l-2'
             }
             steps{
+                sh 'pwd'
                 sh 'ls -la' //woher hat -l-2 .env?
                 unstash 'env'
                 unstash 'compose'
