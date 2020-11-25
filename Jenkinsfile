@@ -131,7 +131,7 @@ pipeline {
                 script {
                     def input = input message: 'User input required',
                             parameters: [choice(name: 'Promote to production', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
-                    if ("${proceed}" == 'Stop') {
+                    if (input == 'Stop') {
                         error "The build was stopped by ${username}"
                     }
 
