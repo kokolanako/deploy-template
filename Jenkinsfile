@@ -120,9 +120,9 @@ pipeline {
 //            }
 
             steps{
-                emailext (subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
-                        body: "<a href='${env.BUILD_URL}'>Click to approve</a>")
                 script{
+                    emailext (subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
+                            body: "<a href='${env.BUILD_URL}'>Click to approve</a>")
                     def input=input message: 'User input required',
                             parameters: [choice(name: 'Promote to production', choices: ['NO','YES'], description: 'Choose "yes" if you want to deploy this build in production')]
                     if("${proceed}" =='Stop'){
