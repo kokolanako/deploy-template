@@ -53,6 +53,8 @@ pipeline {
             }
 
             steps {
+                sh 'pwd'
+                sh 'ls -la'
                 sh "ssh -i ${env.CD_SECRET_KEY} -v -T -o StrictHostKeyChecking=no root@en-cdeval-prod hostname"
             }
 
@@ -96,7 +98,10 @@ pipeline {
         }
         stage('Deploy on PRODUCTION-SERVER'){
             agent {
-                label 'en-jenkins-l-2'
+                node{
+                    label 'en-jenkins-l-2'
+                    customWorkspace "jenkins-workspace/${JOB_NAME}/${BUILD_NUMBER}"
+                }
             }
             steps{
                 sh 'pwd'
