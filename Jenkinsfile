@@ -7,7 +7,7 @@ pipeline {
     }
     environment {
         KISTERS_DOCKER_HOME = "/opt/kisters/docker"
-        BUILD_URL = "https://jenkins.energy-dev.kisters.de/${JOB_NAME}/${BUILD_NUMBER}/console"
+        BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/${JOB_NAME}/${BUILD_NUMBER}/console"
         EMAL_TO = "Polina.Mrachkovskaya@kisters.de"
 
     }
