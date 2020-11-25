@@ -129,13 +129,13 @@ pipeline {
         always{
             node('en-jenkins-l-2'){
                 script{
-                    cleanWs()
+                    deleteDir()
                 }
             }
             node('en-jenkins-l-2'){
                 script{
-                    cleanWs()
-//                    deleteDir()
+//                    cleanWs()
+                    deleteDir()
                 }
             }
         }
