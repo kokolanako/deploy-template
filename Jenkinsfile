@@ -101,9 +101,9 @@ pipeline {
                 unstash 'compose'
                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
                     sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf /opt/yay && mkdir -p /opt/yay'"
-//                    sh "scp -i $test .env root@en-cdeval-prod:/opt/kisters/docker/yay"
-//                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:/opt/kisters/docker/yay"
-//                    sh "ssh -i $test -T root@en-cdeval-prod 'cd /opt/kisters/docker/yay && docker-compose down && docker-compose up -d'"
+                    sh "scp -i $test .env root@en-cdeval-prod:/opt/yay"
+                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:/opt/yay"
+                    sh "ssh -i $test -T root@en-cdeval-prod 'cd /opt/yay && docker-compose down && docker-compose up -d'"
                 }
             }
 
