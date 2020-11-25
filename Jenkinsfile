@@ -109,22 +109,22 @@ pipeline {
                     customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
                 }
             }
-            script{
 
-                emailext   subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
-                        body: "<a href="${env.BUILD_URL}">Click to approve</a>";
-            }
-            input{
-
-                message"Proceed?"
-                parameters{
-                    string(name: 'username', defaultValue:'user', description:' Username of the use pressing OK')
-                    choice(choices: ['Proceed','Stop'], name:'proceed')
-                }
-            }
+//            input{
+//
+//                message"Proceed?"
+//                parameters{
+//                    string(name: 'username', defaultValue:'user', description:' Username of the use pressing OK')
+//                    choice(choices: ['Proceed','Stop'], name:'proceed')
+//                }
+//            }
 
             steps{
                 script{
+                    emailext   subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
+                            body: "<a href="${env.BUILD_URL}">Click to approve</a>";
+                    def input=input message: 'User input required',
+                            parameters: [choice(name: 'Promote to production', choices: ['NO','YES'], description: 'Choose "yes" if you want to deploy this build in production')]
                     if("${proceed}" =='Stop'){
                         error "The build was stopped by ${username}"
                     }
