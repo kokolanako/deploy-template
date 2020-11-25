@@ -176,11 +176,8 @@ pipeline {
     }
     post {
         failure {
-            step {
-
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}",from: "jenkins@mail.com", recipientProviders: [developers()],
+             emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}",from: "jenkins@mail.com", recipientProviders: [developers()],
                         body: "<a href=" $ { BUILD_URL } ">click to trace the failure</a>";
-            }
         }
     }
 //    post{
