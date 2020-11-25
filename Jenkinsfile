@@ -99,13 +99,13 @@ pipeline {
                 }
             }
         }
-        stage('Deploy on PRODUCTION-SERVER'){
-            agent {
-                node{
-                    label 'en-jenkins-l-2'
-                    customWorkspace "jenkins-workspace/${JOB_NAME}/${BUILD_NUMBER}"
-                }
-            }
+//        stage('Deploy on PRODUCTION-SERVER'){
+//            agent {
+//                node{
+//                    label 'en-jenkins-l-2'
+//                    customWorkspace "jenkins-workspace/${JOB_NAME}/${BUILD_NUMBER}"
+//                }
+//            }
 //            steps{
 //                sh 'pwd'
 //                sh 'ls -la' //woher hat -l-2 .env?
@@ -120,7 +120,7 @@ pipeline {
 //                }
 //            }
 
-        }
+//        }
 
     }
 }
