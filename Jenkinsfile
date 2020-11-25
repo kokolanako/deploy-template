@@ -124,7 +124,7 @@ pipeline {
                     }
                 }
 
-                echo "User: ${username}  ${env.BUILD_USER_ID} triggered the deployment stage"
+                echo "User:  ${env.BUILD_USER_ID} triggered the deployment stage"
                 sh 'pwd'
                 sh 'ls -la' //woher hat -l-2 .env?
                 unstash 'env'
