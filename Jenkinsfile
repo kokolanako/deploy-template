@@ -118,9 +118,12 @@ pipeline {
             }
 
             steps{
-                if(${proceed} =='Stop'){
-                    error "The build was stopped by ${env.BUILD_USER_ID}"
+                script{
+                    if(${proceed} =='Stop'){
+                        error "The build was stopped by ${env.BUILD_USER_ID}"
+                    }
                 }
+
                 echo "User: ${username}  ${env.BUILD_USER_ID} triggered the deployment stage"
                 sh 'pwd'
                 sh 'ls -la' //woher hat -l-2 .env?
