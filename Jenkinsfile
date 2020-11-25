@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        label 'en-jenkins-l-1'
+        node{
+            label 'en-jenkins-l-1'
+            customWorkspace "${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}"
+        }
     }
 
     parameters {
