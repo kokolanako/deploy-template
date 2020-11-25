@@ -50,7 +50,7 @@ pipeline {
             }
 
             steps {
-                sh "ssh -i ${env.CD_SECRET_KEY} -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname"
+                sh "ssh -i ${env.CD_SECRET_KEY} -v -T -o StrictHostKeyChecking=no root@en-cdeval-prod hostname"
             }
 
         }
@@ -100,10 +100,10 @@ pipeline {
                 unstash 'env'
                 unstash 'compose'
                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
-                    sh "ssh -i $test -T root@en-cdeval-prod 'rm -rf /opt/kisters/docker/yay && mkdir /opt/kisters/docker/yay'"
-                    sh "scp -i $test .env root@en-cdeval-prod:/opt/kisters/docker/yay"
-                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:/opt/kisters/docker/yay"
-                    sh "ssh -i $test -T root@en-cdeval-prod 'cd /opt/kisters/docker/yay && docker-compose down && docker-compose up -d'"
+                    sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf /opt/kisters/docker/yay && mkdir /opt/kisters/docker/yay'"
+//                    sh "scp -i $test .env root@en-cdeval-prod:/opt/kisters/docker/yay"
+//                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:/opt/kisters/docker/yay"
+//                    sh "ssh -i $test -T root@en-cdeval-prod 'cd /opt/kisters/docker/yay && docker-compose down && docker-compose up -d'"
                 }
             }
 
