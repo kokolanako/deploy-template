@@ -8,6 +8,7 @@ pipeline {
     environment {
         KISTERS_DOCKER_HOME = "/opt/kisters/docker"
         BUILD_URL = "https://jenkins.energy-dev.kisters.de/${JOB_NAME}/${BUILD_NUMBER}/console"
+        EMAL_TO="Polina.Mrachkovskaya@kisters.de"
 
     }
 
@@ -104,7 +105,7 @@ pipeline {
         }
         stage('Send Email') {
             steps {
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", from: "jenkins@mail.com", recipientProviders: [developers()],
+                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com", recipientProviders: [developers()],
                         body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
             }
         }
@@ -175,9 +176,9 @@ pipeline {
     }
     post {
         failure {
-            steps {
+            step {
 
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
+                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}",from: "jenkins@mail.com", recipientProviders: [developers()],
                         body: "<a href=" $ { BUILD_URL } ">click to trace the failure</a>";
             }
         }
