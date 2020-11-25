@@ -125,19 +125,19 @@ pipeline {
         }
 
     }
-    post{
-        always{
-            node('en-jenkins-l-2'){
-                script{
-                    deleteDir()
-                }
-            }
-            node('en-jenkins-l-2'){
-                script{
-//                    cleanWs()
-                    deleteDir()
-                }
-            }
-        }
-    }
+//    post{
+//        always{
+//            node('en-jenkins-l-2'){
+//                script{
+//                    deleteDir()
+//                }
+//            }
+//            node('en-jenkins-l-2'){
+//                script{
+////                    cleanWs()
+//                    deleteDir()
+//                }
+//            }
+//        }
+//    }
 }
