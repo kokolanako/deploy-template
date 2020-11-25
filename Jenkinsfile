@@ -103,12 +103,12 @@ pipeline {
                 }
             }
         }
-        stage('Send Email') {
-            steps {
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
-                        body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
-            }
-        }
+//        stage('Send Email') {
+//            steps {
+//                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
+//                        body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
+//            }
+//        }
         stage('Deploy on PRODUCTION-SERVER') {
             agent {
                 node {
@@ -131,13 +131,15 @@ pipeline {
                 script {
                     def input = input message: 'User input required',
                             parameters: [choice(name: 'inputC', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
+                    echo input
+                    echo "${inputC}"
                     if (input == 'NO') {
                         error "The build was stopped by ${username}"
                     }
 
                 }
 
-                echo "User: ${username} triggered the deployment stage"
+//                echo "User: ${username} triggered the deployment stage"
                 sh 'pwd'
                 sh 'ls -la' //woher hat -l-2 .env?
                 unstash 'env'
@@ -174,15 +176,15 @@ pipeline {
         }
 
     }
-    post {
-        failure {
-            script {
-
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
-                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
-            }
-        }
-    }
+//    post {
+//        failure {
+//            script {
+//
+//                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
+//                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
+//            }
+//        }
+//    }
 //    post{
 //        always{
 //            node('en-jenkins-l-2'){
