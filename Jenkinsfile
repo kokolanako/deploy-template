@@ -103,12 +103,12 @@ pipeline {
                 }
             }
         }
-//        stage('Send Email') {
-//            steps {
-//                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
-//                        body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
-//            }
-//        }
+        stage('Send Email') {
+            steps {
+                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
+                        body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
+            }
+        }
         stage('Deploy on PRODUCTION-SERVER') {
             agent {
                 node {
@@ -175,15 +175,15 @@ pipeline {
         }
 
     }
-//    post {
-//        failure {
-//            script {
-//
-//                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
-//                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
-//            }
-//        }
-//    }
+    post {
+        failure {
+            script {
+
+                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
+                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
+            }
+        }
+    }
 //    post{
 //        always{
 //            node('en-jenkins-l-2'){
