@@ -2,11 +2,12 @@ pipeline {
     agent {
         node{
             label 'en-jenkins-l-1'
-            customWorkspace "jenkins-workspace/${JOB_NAME}/${BUILD_NUMBER}"
+            customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
         }
     }
     environment{
         KISTERS_DOCKER_HOME="/opt/kisters/docker"
+
     }
 
     parameters {
@@ -65,15 +66,16 @@ pipeline {
 
         stage('Deploy  the app on TEST-remote') {
             steps {
+                sh 'ls -la'
                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
                     sh 'rm -f .env'
                     sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
                     stash includes: '.env', name: 'env'
                     stash includes: 'docker-compose.yml', name: 'compose'
                     sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
-                    sh "scp -i $test .env root@en-cdeval-test:/opt/kisters/docker/yay"
-                    sh "scp -i $test docker-compose.yml root@en-cdeval-test:/opt/kisters/docker/yay"
-                    sh "ssh -i $test -T root@en-cdeval-test 'cd /opt/kisters/docker/yay && docker-compose down && docker-compose up -d'"
+                    sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
+                    sh "scp -i $test docker-compose.yml root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
+                    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
                 }
             }
 
@@ -99,28 +101,28 @@ pipeline {
                 }
             }
         }
-//        stage('Deploy on PRODUCTION-SERVER'){
-//            agent {
-//                node{
-//                    label 'en-jenkins-l-2'
-//                    customWorkspace "jenkins-workspace/${JOB_NAME}/${BUILD_NUMBER}"
-//                }
-//            }
-//            steps{
-//                sh 'pwd'
-//                sh 'ls -la' //woher hat -l-2 .env?
-//                unstash 'env'
-//                unstash 'compose'
-//                withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
-//
-//                    sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf /opt/kisters/docker/yay && mkdir -p /opt/kisters/docker/yay'"
-//                    sh "scp -i $test .env root@en-cdeval-prod:/opt/yay"
-//                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:/opt/yay"
-//                    sh "ssh -i $test -T root@en-cdeval-prod 'cd /opt/yay && docker-compose down && docker-compose up -d'"
-//                }
-//            }
+        stage('Deploy on PRODUCTION-SERVER'){
+            agent {
+                node{
+                    label 'en-jenkins-l-2'
+                    customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
+                }
+            }
+            steps{
+                sh 'pwd'
+                sh 'ls -la' //woher hat -l-2 .env?
+                unstash 'env'
+                unstash 'compose'
+                withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
 
-//        }
+                    sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir -p ${env.KISTERS_DOCKER_HOME}/yay'"
+                    sh "scp -i $test .env root@en-cdeval-prod:${env.KISTERS_DOCKER_HOME}/yay"
+                    sh "scp -i $test docker-compose.yml root@en-cdeval-prod:${env.KISTERS_DOCKER_HOME}/yay"
+                    sh "ssh -i $test -T root@en-cdeval-prod 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
+                }
+            }
+
+        }
 
     }
 }
