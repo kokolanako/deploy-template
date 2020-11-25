@@ -132,7 +132,6 @@ pipeline {
                     def input = input message: 'User input required',
                             parameters: [choice(name: 'inputC', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
                     echo input
-                    echo "${inputC}"
                     if (input == 'NO') {
                         error "The build was stopped by ${username}"
                     }
