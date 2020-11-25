@@ -127,14 +127,14 @@ pipeline {
     }
     post{
         always{
-            node('en-jenkins-l-1'){
-                script{
-                    deleteDir()
-                }
-            }
             node('en-jenkins-l-2'){
                 script{
 //                    cleanWs()
+                    deleteDir()
+                }
+            }
+            node('en-jenkins-l-1'){
+                script{
                     deleteDir()
                 }
             }
