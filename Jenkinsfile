@@ -1,0 +1,108 @@
+pipeline {
+    agent {
+        label 'en-jenkins-l-1'
+    }
+
+    parameters {
+        // choice(name:'MS', choices:['ms1','ms2'],description:'Pick the microservice to deploy')
+        string(name: 'MS', defaultValue: 'ms1')
+        string(name: 'IMAGE', defaultValue: '705249/lol:48')
+        string(name: 'CONTAINER', defaultValue: 'ms1')
+
+    }
+    stages {
+//        stage('Start the app') {
+//            steps {
+//                sh 'docker ps -a'
+//                echo "Deploying ${params.MS}"
+//                sh 'rm -f .env'
+//                sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\">> .env"
+//
+////                sh 'docker-compose pull'
+//                sh 'docker-compose down'
+//                sh 'docker-compose up -d'
+//
+//            }
+//        }
+//        stage('Test') {
+//            steps {
+//                sleep(3)
+//                script {
+//
+////                    http://localhost:8081/rest/data?country=Aus&sector=private&year=2018
+//
+//                    def statusCode = sh(script: "curl -sLI -w '%{http_code}' 'http://en-jenkins-l-1:8081/test?country=Aus' -o /dev/null", returnStdout: true)
+//                    echo statusCode
+//                    println statusCode.getClass()
+//                    if (statusCode != "200") {
+//                        catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+//                            sh "exit 1"
+//                        }
+//                    }
+//
+//                }
+//            }
+//        }
+
+        stage('SSH') {
+            environment {
+                CD_SECRET_KEY = credentials('jenkins-cd-key')
+            }
+
+            steps {
+                sh "ssh -i ${env.CD_SECRET_KEY} -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname"
+            }
+
+        }
+
+        stage('Deploy  the app on TEST-remote') {
+            steps {
+                withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
+                    sh 'rm -f .env'
+                    sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
+                    stash includes: '.env', name: 'env'
+                    stash includes: 'docker-compose.yml', name: 'compose'
+                    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf /opt/kisters/docker/yay && mkdir /opt/kisters/docker/yay'"
+                    sh "scp -i $test .env root@en-cdeval-test:/opt/kisters/docker/yay"
+                    sh "scp -i $test docker-compose.yml root@en-cdeval-test:/opt/kisters/docker/yay"
+                    sh "ssh -i $test -T root@en-cdeval-test 'cd /opt/kisters/docker/yay && docker-compose down && docker-compose up -d'"
+                }
+            }
+
+        }
+
+
+        stage('Test on TEST-SERVER') {
+            steps {
+                script {
+                    retry(3) {// if fails then retries again
+
+                        withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
+
+                            sleep(4)//retry
+                            def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
+                            echo statusCode
+//                        println statusCode.getClass()
+                            if (statusCode != "200") {
+                                error "Curl command was not successful, it delivered status code ${statusCode}"
+                            }
+                        }
+                    }
+//                    http://localhost:8081/rest/data?country=Aus&sector=private&year=2018
+                }
+            }
+        }
+        stage('Deploy on PRODUCTION-SERVER'){
+            agent {
+                label 'en-jenkins-l-2'
+            }
+            steps{
+                sh 'ls -la'
+                unstash 'env'
+                unstash 'compose'
+            }
+
+        }
+
+    }
+}

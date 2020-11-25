@@ -1,0 +1,9 @@
+
+version: '3'
+services:
+  backend-app:
+    container_name: "${CONTAINER_NAME}"
+    image: "${IMAGE_NAME}"
+    ports:
+      - 8081:8081
+    build: .
