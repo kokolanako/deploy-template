@@ -108,7 +108,20 @@ pipeline {
                     customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
                 }
             }
+            input{
+
+                message"Proceed?"
+                parameters{
+                    string(name: 'username', defaultValue:'user', description:' Username of the use pressing OK')
+                    choice(choices: ['Proceed','Stop'], name:'proceed')
+                }
+            }
+
             steps{
+                if(${proceed} =='Stop'){
+                    error "The build was stopped by ${env.BUILD_USER_ID}"
+                }
+                echo "User: ${username}  ${env.BUILD_USER_ID} triggered the deployment stage"
                 sh 'pwd'
                 sh 'ls -la' //woher hat -l-2 .env?
                 unstash 'env'
