@@ -1,13 +1,13 @@
 pipeline {
     agent {
-        node{
+        node {
             label 'en-jenkins-l-1'
             customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
         }
     }
-    environment{
-        KISTERS_DOCKER_HOME="/opt/kisters/docker"
-        BUILD_URL="https://jenkins.energy-dev.kisters.de/${JOB_NAME}/${BUILD_NUMBER}/console"
+    environment {
+        KISTERS_DOCKER_HOME = "/opt/kisters/docker"
+        BUILD_URL = "https://jenkins.energy-dev.kisters.de/${JOB_NAME}/${BUILD_NUMBER}/console"
 
     }
 
@@ -102,15 +102,15 @@ pipeline {
                 }
             }
         }
-        stage('Send Email'){
-            steps{
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de",from: "jenkins@mail.com", recipientProviders: [developers()],
+        stage('Send Email') {
+            steps {
+                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", from: "jenkins@mail.com", recipientProviders: [developers()],
                         body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
             }
         }
-        stage('Deploy on PRODUCTION-SERVER'){
+        stage('Deploy on PRODUCTION-SERVER') {
             agent {
-                node{
+                node {
                     label 'en-jenkins-l-2'
                     customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
                 }
@@ -125,12 +125,12 @@ pipeline {
 //                }
 //            }
 
-            steps{
+            steps {
 
-                script{
-                    def input=input message: 'User input required',
-                            parameters: [choice(name: 'Promote to production', choices: ['NO','YES'], description: 'Choose "yes" if you want to deploy this build in production')]
-                    if("${proceed}" =='Stop'){
+                script {
+                    def input = input message: 'User input required',
+                            parameters: [choice(name: 'Promote to production', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
+                    if ("${proceed}" == 'Stop') {
                         error "The build was stopped by ${username}"
                     }
 
@@ -173,10 +173,13 @@ pipeline {
         }
 
     }
-    post{
+    post {
         failure {
-            emailext   subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
-                    body: "<a href="${BUILD_URL}">click to trace the failure</a>";
+            steps {
+
+                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
+                        body: "<a href=" $ { BUILD_URL } ">click to trace the failure</a>";
+            }
         }
     }
 //    post{
