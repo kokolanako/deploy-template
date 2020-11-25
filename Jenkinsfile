@@ -164,7 +164,7 @@ pipeline {
     }
     post{
         failure {
-            mail  charset: 'UTF-8', mimeType: 'text/html', subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()];
+            emailext   subject: "ERROR CI: Project name -> ${env.JOB_NAME}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()];
         }
     }
 //    post{
