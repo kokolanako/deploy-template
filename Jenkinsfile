@@ -109,8 +109,11 @@ pipeline {
                     customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
                 }
             }
-            emailext   subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
-                    body: "<a href="${env.BUILD_URL}">Click to approve</a>";
+            script{
+
+                emailext   subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "Polina.Mrachkovskaya@kisters.de", recipientProviders: [developers()],
+                        body: "<a href="${env.BUILD_URL}">Click to approve</a>";
+            }
             input{
 
                 message"Proceed?"
