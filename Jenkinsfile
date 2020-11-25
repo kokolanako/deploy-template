@@ -179,7 +179,7 @@ pipeline {
             script {
 
                 emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com", recipientProviders: [developers()],
-                        body: "<a href=" $ { BUILD_URL } ">click to trace the failure</a>";
+                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
             }
         }
     }
