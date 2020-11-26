@@ -14,7 +14,7 @@ job("MS1-checkout") {
     }
     steps {
         shell('ls -la')
-        shell('mvn clean package')
+        shell('mvn -version')
         shell('ls -la')
     }
 }
