@@ -1,17 +1,15 @@
-job("MS1-checkout"){
-    parameters{
-        nodeParam('build-slave-maven')
-    }
-    scm{
-        git{
+job("MS1-checkout") {
+    label 'build-slave-maven' 
+    scm {
+        git {
             remote {
-               url ('https://github.com/kokolanako/be.git')
+                url('https://github.com/kokolanako/be.git')
             }
             branch('ms1')
         }
 
     }
-    steps{
+    steps {
         shell('ls -la')
     }
 }
