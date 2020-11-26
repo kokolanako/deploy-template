@@ -1,8 +1,10 @@
 job("example"){
     scm{
-        git('git://github.com/wardviaene/docker-demo.git'){
-            node->
-                node / gitConfigName("DSL User")
+        git{
+            remote {
+               url ('https://github.com/kokolanako/be.git')
+            }
+            branch('ms1')
         }
 
     }
