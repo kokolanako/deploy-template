@@ -1,6 +1,6 @@
 job("MS1-checkout"){
     parameters{
-        nodeParam('en-jenkins-l-2')
+        nodeParam('build-slave-maven')
     }
     scm{
         git{
