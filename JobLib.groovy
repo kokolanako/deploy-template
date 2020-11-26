@@ -22,7 +22,7 @@ pipelineJob("PipelineJob-test"){
             scm {
                 git {
                     remote {
-                        url(depoy)
+                        url(deploy)
                     }
                     branch("master")
                 }
