@@ -1,15 +1,33 @@
-job("MS1-checkout") {
-    label 'build-slave-maven' 
-    scm {
-        git {
-            remote {
-                url('https://github.com/kokolanako/be.git')
-            }
-            branch('ms1')
-        }
+def be='https://github.com/kokolanako/be.git'
+def deploy='https://github.com/kokolanako/deploy-template.git'
 
-    }
-    steps {
-        shell('ls -la')
+//job("MS1-checkout") {
+//    label 'build-slave-maven'
+//    scm {
+//        git {
+//            remote {
+//                url(be)
+//            }
+//            branch('ms1')
+//        }
+//
+//    }
+//    steps {
+//        shell('ls -la')
+//    }
+//}
+pipelineJob("PipelineJob-test"){
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url(depoy)
+                    }
+                    branch("master")
+                }
+            }
+            scriptPath("Jenkinsfile")
+        }
     }
 }
