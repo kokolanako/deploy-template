@@ -14,9 +14,9 @@ pipeline {
 
     parameters {
         // choice(name:'MS', choices:['ms1','ms2'],description:'Pick the microservice to deploy')
-        string(name: 'MS', defaultValue: 'ms1')
-        string(name: 'IMAGE', defaultValue: '705249/lol:48')
-        string(name: 'CONTAINER', defaultValue: 'ms1')
+        string(name: 'MS', defaultValue: env.job)
+        string(name: 'IMAGE', defaultValue: env.image)
+        string(name: 'CONTAINER', defaultValue: env.container)
 
     }
     stages {
