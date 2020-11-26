@@ -1,4 +1,7 @@
-job("example"){
+job("MS1-checkout"){
+    parameters{
+        nodeParam('en-jenkins-l-2')
+    }
     scm{
         git{
             remote {
