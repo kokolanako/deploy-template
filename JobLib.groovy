@@ -36,7 +36,7 @@ pipelineJob("PipelineJob-test"){
 //            scriptPath("Jenkinsfile")
 //        }
         cps{
-            script(readFileFromWorkspace(JobLib.groovy))
+            script(readFileFromWorkspace("JobLib.groovy"))
         }
     }
 }
