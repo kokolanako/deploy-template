@@ -24,7 +24,7 @@ pipelineJob("PipelineJob-test"){
                     remote {
                         url(deploy)
                     }
-                    branch("jobDSL")
+                    branch("*/jobDSL")
                 }
             }
             scriptPath("Jenkinsfile")
