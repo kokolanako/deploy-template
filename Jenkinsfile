@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node {
-            label 'en-jenkins-l-1'
+            label 'build-slave-maven'
             customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
         }
     }
@@ -112,7 +112,7 @@ pipeline {
         stage('Deploy on PRODUCTION-SERVER') {
             agent {
                 node {
-                    label 'en-jenkins-l-2'
+                    label 'build-slave-maven'
                     customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
                 }
             }
