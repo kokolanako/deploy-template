@@ -52,7 +52,6 @@ job('ms1-docker-commit-test') {
         shell('echo $name')
         shell("echo $image")
         shell('docker build . -t ' + image)
-        shell('docker rmi ' + image)
     }
     publishers {
         downstream ('ms1-docker-deploy-test','UNSTABLE')
@@ -73,6 +72,7 @@ job('ms1-docker-deploy-test') {
         shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell('docker push '+image)
         shell('docker logout')
+        shell('docker rmi ' + image)
     }
 
 }
