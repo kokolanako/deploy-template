@@ -41,11 +41,7 @@ job("MS1-MVN-BUILD") {
         }
     }
 }
-environment {
-    registry = "705249/lol"
-    image = "${env.registry}:${BUILD_NUMBER}"
-    registryCredential = 'dockerhub'
-}
+
 
 job('ms1-docker-commit-test'){
     label d1
