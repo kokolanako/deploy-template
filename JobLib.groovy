@@ -30,7 +30,6 @@ job("MS1-MVN-BUILD") {
     }
     publishers{
         archiveArtifacts {
-            
             pattern('**/*-SNAPSHOT.jar')
             onlyIfSuccessful()
         }
