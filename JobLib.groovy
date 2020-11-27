@@ -5,7 +5,8 @@ def l2='en-jenkins-l-2'
 
 job("MS1-MVN-BUILD") {
     label l1
-    jdk()
+    jdk("jdk11")
+    
 //    customWorkspace ("workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
         git {
@@ -26,7 +27,9 @@ job("MS1-MVN-BUILD") {
         maven{
             mavenInstallation('3.42')
             goals('clean package') //Java 11
+
         }
+        shell('ls -la')
 
     }
 //    publishers{
