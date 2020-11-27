@@ -14,7 +14,8 @@ job("MS1-checkout") {
     }
     steps {
         shell('ls -la')
-        shell('mvn -version')
+        shell('docker -v')
+        
         shell('ls -la')
     }
 }
