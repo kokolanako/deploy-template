@@ -61,7 +61,7 @@ job('ms1-docker-commit-test'){
         downstreamParameterized {
             trigger('ms1-docker-deploy-test') {
                 parameters {
-                    predefinedProp('label', "$d1")
+                    predefinedProp('label-d', "$d1")
 
                 }
             }
@@ -69,7 +69,8 @@ job('ms1-docker-commit-test'){
     }
 }
 job('ms1-docker-deploy-test'){
-    label "$label"
+    label '$label-d'
+    
         wrappers{
         credentialsBinding{
             usernamePassword('user','pw','dockerhub')
