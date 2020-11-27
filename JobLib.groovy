@@ -57,6 +57,9 @@ job('ms1-docker-commit-test') {
     publishers {
         downstreamParameterized {
             trigger('ms1-docker-deploy-test') {
+                parameters{
+                    currentBuild()
+                }
             }
         }
     }
