@@ -1,8 +1,8 @@
-def be='https://github.com/kokolanako/be.git'
-def deploy='https://github.com/kokolanako/deploy-template.git'
-def l1='build-slave-maven'
-def d1='en-compile-stage-docker'
-def ms1='ms1'
+def be = 'https://github.com/kokolanako/be.git'
+def deploy = 'https://github.com/kokolanako/deploy-template.git'
+def l1 = 'build-slave-maven'
+def d1 = 'en-compile-stage-docker'
+def ms1 = 'ms1'
 
 job("MS1-MVN-BUILD") {
     label l1
@@ -10,13 +10,14 @@ job("MS1-MVN-BUILD") {
 
 //    customWorkspace ("${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
-        git {remote {url(be)}
+        git {
+            remote { url(be) }
             branch('ms1')
         }
     }
 
-    steps{
-        maven{
+    steps {
+        maven {
             mavenInstallation('maven-3.6.3')
             goals('clean package') //Java 11
 
@@ -25,7 +26,7 @@ job("MS1-MVN-BUILD") {
         shell('pwd')
 
     }
-    publishers{
+    publishers {
         archiveArtifacts {
             pattern('**/target/**SNAPSHOT.jar')
             pattern('Dockerfile')
@@ -41,22 +42,22 @@ job("MS1-MVN-BUILD") {
         }
     }
 }
-def registry= '705249/lol'
-def image= "705249/lol:${BUILD_NUMBER}"
+def registry = '705249/lol'
+def image = "705249/lol:${BUILD_NUMBER}"
 def registryCredential = 'dockerhub'
 
-job('ms1-docker-commit-test'){
+job('ms1-docker-commit-test') {
     label d1
-    steps{
-        copyArtifacts("MS1-MVN-BUILD"){
+    steps {
+        copyArtifacts("MS1-MVN-BUILD") {
 
         }
         shell('echo $name')
         shell("echo $image")
-        shell('docker build . -t '+image)
-        shell('docker rmi '+image)
+        shell('docker build . -t ' + image)
+        shell('docker rmi ' + image)
     }
-    publishers{
+    publishers {
 
         downstreamParameterized {
             trigger('ms1-docker-deploy-test') {
@@ -65,30 +66,23 @@ job('ms1-docker-commit-test'){
         }
     }
 }
-job('ms1-docker-deploy-test'){
+job('ms1-docker-deploy-test') {
     label d1
 
-        wrappers{
-        credentialsBinding{
-            usernamePassword('user','pw','dockerhub')
-            steps{
+    wrappers {
+        credentialsBinding {
+            usernamePassword('user', 'pw', 'dockerhub')
+            steps {
 
-                shell('echo $user')
+                shell("echo $user")
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
             }
         }
-        }
+    }
 
 }
-
-
-
-
-
-
-
 
 
 //pipelineJob("PipelineJob-test"){
