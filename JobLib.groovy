@@ -22,7 +22,7 @@ job("MS1-MVN-BUILD") {
         }
     }
     steps {
-        goals('clean package')
+        shell('mvn clean package')
         shell('ls -la')
 //        shell('mvn clean package')
         shell('ls -la')
