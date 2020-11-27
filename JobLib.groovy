@@ -64,7 +64,7 @@ job('ms1-docker-commit-test'){
         }
         shell('docker -v')
         shell('ls -la ')
-        shell("echo ${env.image}")
+        shell("echo ${image}")
 //        shell('docker build . -t '+${env.image})
 //        shell('docker images')
 //        shell('docker rmi '+${image})
