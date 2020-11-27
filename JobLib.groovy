@@ -47,13 +47,6 @@ def registryCredential = 'dockerhub'
 
 job('ms1-docker-commit-test'){
     label d1
-
-
-//    wrappers{
-//        credentialBinding{
-//            usernamePassword('user','pw','dockerhub')
-//        }
-//    }
     steps{
         copyArtifacts("MS1-MVN-BUILD"){
 
@@ -63,17 +56,31 @@ job('ms1-docker-commit-test'){
         shell('docker build . -t '+image)
         shell('docker rmi '+image)
     }
-//    publishers{
-//
-//        downstreamParameterized {
-//            trigger('ms1-docker-deploy-test') {
-//                parameters {
-//                    predefinedProp('name', 'ms1')
-//
-//                }
-//            }
-//        }
-//    }
+    publishers{
+
+        downstreamParameterized {
+            trigger('ms1-docker-deploy-test') {
+                parameters {
+                    predefinedProp('label', "$d1")
+
+                }
+            }
+        }
+    }
+}
+job('ms1-docker-deploy-test'){
+    label "$label"
+        wrappers{
+        credentialsBinding{
+            usernamePassword('user','pw','dockerhub')
+        }
+    }
+    steps{
+        shell("docker login --user='$user' --password='$pw'")
+        shell('docker push '+image)
+        shell('docker logout')
+    }
+
 }
 
 
