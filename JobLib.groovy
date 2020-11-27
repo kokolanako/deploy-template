@@ -20,7 +20,6 @@ job("MS1-MVN-BUILD") {
         maven {
             mavenInstallation('maven-3.6.3')
             goals('clean package') //Java 11
-
         }
         shell('ls -la')
         shell('pwd')
@@ -36,7 +35,6 @@ job("MS1-MVN-BUILD") {
             trigger('ms1-docker-commit-test') {
                 parameters {
                     predefinedProp('name', 'ms1')
-
                 }
             }
         }
@@ -50,7 +48,6 @@ job('ms1-docker-commit-test') {
     label d1
     steps {
         copyArtifacts("MS1-MVN-BUILD") {
-
         }
         shell('echo $name')
         shell("echo $image")
@@ -58,10 +55,8 @@ job('ms1-docker-commit-test') {
         shell('docker rmi ' + image)
     }
     publishers {
-
         downstreamParameterized {
             trigger('ms1-docker-deploy-test') {
-
             }
         }
     }
@@ -74,7 +69,7 @@ job('ms1-docker-deploy-test') {
             usernamePassword('user', 'pw', 'dockerhub')
             steps {
 
-                shell("echo $user")
+                shell("echo ${user}")
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
