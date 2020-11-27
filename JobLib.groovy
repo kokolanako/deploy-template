@@ -1,10 +1,11 @@
 def be='https://github.com/kokolanako/be.git'
 def deploy='https://github.com/kokolanako/deploy-template.git'
-def l1='en-jenkins-l-1'
+def l1='build-slave-maven'
 def l2='en-jenkins-l-2'
 
 job("MS1-MVN-BUILD") {
-    label 'build-slave-maven'
+    label l1
+    jdk()
 //    customWorkspace ("workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
         git {
@@ -22,12 +23,10 @@ job("MS1-MVN-BUILD") {
 //        }
 //    }
     steps{
-//        maven{
-////            mavenInstallation('maven')
-//            providedSettings('maven')
-//            goals('clean package') //Java 11
-//        }
-        shell('mvn -v')
+        maven{
+            mavenInstallation('3.42')
+            goals('clean package') //Java 11
+        }
 
     }
 //    publishers{
