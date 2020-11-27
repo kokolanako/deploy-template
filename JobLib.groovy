@@ -64,6 +64,8 @@ job('ms1-docker-commit-test'){
         shell('docker build . -t '+image)
         shell('docker images')
         shell('docker rmi '+image)
+        shell('docker images')
+        shell('mvn -version')
     }
 }
 
