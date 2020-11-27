@@ -66,10 +66,10 @@ job('ms1-docker-deploy-test') {
 
     wrappers {
         credentialsBinding {
-//            usernamePassword('user', 'pw', 'dockerhub')
-            accessKeyVariable("user")
-            secretKeyVariable("pw")
-            credentialsId("dockerhub")
+            usernamePassword('user', 'pw', 'dockerhub')
+//            accessKeyVariable("user")
+//            secretKeyVariable("pw")
+//            credentialsId("dockerhub")
             steps {
 
                 shell("echo ${user}")
