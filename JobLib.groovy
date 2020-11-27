@@ -78,8 +78,8 @@ job('ms1-docker-deploy-test') {
     }
     steps {
 
-//        shell("echo $item")
-        shell("echo $user")
+        shell("echo $item")
+//        shell("echo ")
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
