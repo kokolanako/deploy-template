@@ -20,14 +20,15 @@ job("MS1-MVN-BUILD") {
 
         }
         shell('ls -la')
+        shell('pwd')
 
     }
-//    publishers{
-//        archiveArtifacts {
-//            pattern('**/*-SNAPSHOT.jar')
-//            onlyIfSuccessful()
-//        }
-//    }
+    publishers{
+        archiveArtifacts {
+            pattern('**/target/**SNAPSHOT.jar')
+            onlyIfSuccessful()
+        }
+    }
 }
 
 
