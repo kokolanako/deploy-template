@@ -57,9 +57,9 @@ job('ms1-docker-commit-test') {
     publishers {
         downstreamParameterized {
             trigger('ms1-docker-deploy-test') {
-                parameters{
-                    currentBuild()
-                }
+//                parameters{
+//                    currentBuild()
+//                }
             }
         }
     }
@@ -73,14 +73,15 @@ job('ms1-docker-deploy-test') {
 //            accessKeyVariable("user")
 //            secretKeyVariable("pw")
 //            credentialsId("dockerhub")
-            steps {
 
-                shell("echo $item")
+        }
+    }
+    steps {
+
+        shell("echo $item")
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
-            }
-        }
     }
 
 }
