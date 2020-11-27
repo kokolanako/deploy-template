@@ -58,10 +58,22 @@ job('ms1-docker-commit-test'){
         copyArtifacts("MS1-MVN-BUILD"){
 
         }
+        shell('echo $name')
         shell("echo $image")
         shell('docker build . -t '+image)
         shell('docker rmi '+image)
     }
+//    publishers{
+//
+//        downstreamParameterized {
+//            trigger('ms1-docker-deploy-test') {
+//                parameters {
+//                    predefinedProp('name', 'ms1')
+//
+//                }
+//            }
+//        }
+//    }
 }
 
 
