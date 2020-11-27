@@ -29,7 +29,8 @@ job("MS1-MVN-BUILD") {
 
     }
     publishers{
-        rchiveArtifacts {
+        archiveArtifacts {
+            
             pattern('**/*-SNAPSHOT.jar')
             onlyIfSuccessful()
         }
