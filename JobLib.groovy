@@ -55,12 +55,7 @@ job('ms1-docker-commit-test') {
         shell('docker rmi ' + image)
     }
     publishers {
-        downstreamParameterized {
-            trigger('ms1-docker-deploy-test') {
-//                parameters{
-//                    currentBuild()
-//                }
-            }
+        downstream ('ms1-docker-deploy-test','UNSTABLE')
         }
     }
 }
