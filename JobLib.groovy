@@ -56,7 +56,7 @@ job('ms1-docker-commit-test') {
     }
     publishers {
         downstream ('ms1-docker-deploy-test','UNSTABLE')
-        
+
     }
 }
 job('ms1-docker-deploy-test') {
@@ -74,7 +74,7 @@ job('ms1-docker-deploy-test') {
     steps {
 
         shell("echo $item")
-//        shell("echo ")
+        shell("echo $user")
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
