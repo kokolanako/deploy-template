@@ -4,7 +4,7 @@ def agent_1_mvn='build-slave-maven'
 def agent_2='build-slave-chef'
 
 job("MS1-checkout") {
-    label agent_2
+    label agent_1_mvn
     scm {
         git {
             remote {
@@ -16,7 +16,7 @@ job("MS1-checkout") {
     }
     steps {
         shell('cd /home && ls -lah')
-        
+
         shell('cd /opt && ls -lah')
         shell('ls -la')
     }
