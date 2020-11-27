@@ -18,11 +18,16 @@ job("MS1-MVN-BUILD") {
     wrappers{
         buildInDocker{
             image('maven:3.6.3-jdk-11')
+            steps {
+                shell('ls -la')
+                shell('mvn clean package')
+                shell('ls -la')
+            }
         }
     }
     steps {
         shell('ls -la')
-        shell('mvn clean package')
+//        shell('mvn clean package')
         shell('ls -la')
     }
 }
