@@ -77,7 +77,7 @@ job('ms1-docker-deploy-test'){
         }
     }
     steps{
-        shell("docker login --user=$user --password=$pw")
+        shell("docker login -u $user -p $pw")
         shell('docker push '+image)
         shell('docker logout')
     }
