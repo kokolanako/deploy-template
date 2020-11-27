@@ -53,11 +53,11 @@ job('ms1-docker-commit-test'){
         keepBuildVariables(true)
     }
 
-    wrappers{
-        credentialBinding{
-            usernamePassword('user','pw','dockerhub')
-        }
-    }
+//    wrappers{
+//        credentialBinding{
+//            usernamePassword('user','pw','dockerhub')
+//        }
+//    }
     steps{
         copyArtifacts("MS1-MVN-BUILD"){
 
