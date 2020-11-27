@@ -47,9 +47,9 @@ job('ms1-docker-commit-test'){
     label d1
     environmentVariables{
 
-        env('registry': '705249/lol')
-        env('image': "${registry}:${BUILD_NUMBER}")
-        env('registryCredential' : 'dockerhub')
+        env('registry', '705249/lol')
+        env('image', "${registry}:${BUILD_NUMBER}")
+        env('registryCredential' , 'dockerhub')
         keepBuildVariables(true)
     }
 
