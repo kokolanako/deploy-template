@@ -15,8 +15,7 @@ job("MS1-checkout") {
 
     }
     steps {
-        shell('ls -la')
-        shell('docker -v')
+        shell('cd /home && ls -lah')
 
         shell('ls -la')
     }
