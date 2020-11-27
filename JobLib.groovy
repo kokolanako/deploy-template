@@ -3,7 +3,7 @@ def deploy='https://github.com/kokolanako/deploy-template.git'
 def l1='en-jenkins-l-1'
 def l2='en-jenkins-l-2'
 
-mavenJob("MS1-MVN-BUILD") {
+job("MS1-MVN-BUILD") {
     label l1
     jdk('Java 1.11')
     customWorkspace ("workspace/${JOB_NAME}/${BUILD_NUMBER}")
@@ -23,7 +23,13 @@ mavenJob("MS1-MVN-BUILD") {
 //            verbose()
 //        }
 //    }
-    goals('clean package')
+    steps{
+        maven{
+            goals('clean package')
+
+        }
+
+    }
 }
 
 
