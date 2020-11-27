@@ -1,8 +1,10 @@
 def be='https://github.com/kokolanako/be.git'
 def deploy='https://github.com/kokolanako/deploy-template.git'
+def agent_1_mvn='build-slave-maven'
+def agent_2='build-slave-chef'
 
 job("MS1-checkout") {
-    label 'build-slave-maven'
+    label agent_2
     scm {
         git {
             remote {
@@ -15,7 +17,7 @@ job("MS1-checkout") {
     steps {
         shell('ls -la')
         shell('docker -v')
-        
+
         shell('ls -la')
     }
 }
