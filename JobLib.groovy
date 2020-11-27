@@ -7,7 +7,7 @@ job("MS1-MVN-BUILD") {
     label l1
     jdk("jdk11")
 
-    customWorkspace ("${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}")
+//    customWorkspace ("${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
         git {remote {url(be)}
             branch('ms1')
