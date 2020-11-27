@@ -9,7 +9,8 @@ job("MS1-MVN-BUILD") {
 
     customWorkspace ("${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
-        git {remote {url(be)}branch('ms1')
+        git {remote {url(be)}
+            branch('ms1')
         }
     }
 
