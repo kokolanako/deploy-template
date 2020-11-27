@@ -61,7 +61,7 @@ job('ms1-docker-commit-test'){
         downstreamParameterized {
             trigger('ms1-docker-deploy-test') {
                 parameters {
-                    predefinedProp('labeld', d1)
+                    predefinedProp('slave', d1)
 
                 }
             }
@@ -69,7 +69,7 @@ job('ms1-docker-commit-test'){
     }
 }
 job('ms1-docker-deploy-test'){
-    label "$labeld"
+    label "$slave"
 
         wrappers{
         credentialsBinding{
@@ -77,7 +77,7 @@ job('ms1-docker-deploy-test'){
             steps{
 
                 shell('echo $user')
-                shell("echo $labeld")
+                shell("echo $slave")
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
