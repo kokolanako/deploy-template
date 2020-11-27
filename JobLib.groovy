@@ -13,7 +13,6 @@ job("MS1-MVN-BUILD") {
             }
             branch('ms1')
         }
-
     }
 //    wrappers{
 //        buildInDocker{
@@ -24,10 +23,16 @@ job("MS1-MVN-BUILD") {
 //    }
     steps{
         maven{
-            goals('clean package')
-
+            jdk('Java 11')
+            goals('clean package') //Java 11
         }
 
+    }
+    publishers{
+        rchiveArtifacts {
+            pattern('**/*-SNAPSHOT.jar')
+            onlyIfSuccessful()
+        }
     }
 }
 
