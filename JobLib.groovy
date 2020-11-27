@@ -47,7 +47,7 @@ def registryCredential = 'dockerhub'
 
 job('ms1-docker-commit-test'){
     label d1
-   
+
 
 //    wrappers{
 //        credentialBinding{
@@ -61,9 +61,9 @@ job('ms1-docker-commit-test'){
         shell('docker -v')
         shell('ls -la ')
         shell("echo $image")
-//        shell('docker build . -t '+${env.image})
-//        shell('docker images')
-//        shell('docker rmi '+${image})
+        shell('docker build . -t '+image)
+        shell('docker images')
+        shell('docker rmi '+image)
     }
 }
 
