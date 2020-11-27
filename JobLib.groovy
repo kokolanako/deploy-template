@@ -4,7 +4,7 @@ def l1='en-jenkins-l-1'
 def l2='en-jenkins-l-2'
 
 job("MS1-checkout") {
-    label agent_1_mvn
+    label l1
     scm {
         git {
             remote {
@@ -15,9 +15,7 @@ job("MS1-checkout") {
 
     }
     steps {
-        shell('cd /home && ls -lah')
-
-        shell('cd /opt && ls -lah')
+        shell('docker -v')
         shell('ls -la')
     }
 }
