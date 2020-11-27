@@ -4,7 +4,7 @@ def l1='en-jenkins-l-1'
 def l2='en-jenkins-l-2'
 
 job("MS1-MVN-BUILD") {
-    label l1
+    label 'build-slave-maven'
 //    customWorkspace ("workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
         git {
@@ -22,19 +22,20 @@ job("MS1-MVN-BUILD") {
 //        }
 //    }
     steps{
-        maven{
-//            mavenInstallation('maven')
-            providedSettings('maven')
-            goals('clean package') //Java 11
-        }
+//        maven{
+////            mavenInstallation('maven')
+//            providedSettings('maven')
+//            goals('clean package') //Java 11
+//        }
+        shell('mvn -v')
 
     }
-    publishers{
-        archiveArtifacts {
-            pattern('**/*-SNAPSHOT.jar')
-            onlyIfSuccessful()
-        }
-    }
+//    publishers{
+//        archiveArtifacts {
+//            pattern('**/*-SNAPSHOT.jar')
+//            onlyIfSuccessful()
+//        }
+//    }
 }
 
 
