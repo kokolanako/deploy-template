@@ -3,8 +3,9 @@ def deploy='https://github.com/kokolanako/deploy-template.git'
 def l1='en-jenkins-l-1'
 def l2='en-jenkins-l-2'
 
-job("MS1-checkout") {
+job("MS1-MVN-BUILD") {
     label l1
+    customWorkspace ("workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
         git {
             remote {
@@ -14,8 +15,14 @@ job("MS1-checkout") {
         }
 
     }
+    wrappers{
+        buildInDocker{
+            image('maven:3.6.3-jdk-11')
+        }
+    }
     steps {
-        shell('docker -v')
+        shell('ls -la')
+        shell('mvn clean package')
         shell('ls -la')
     }
 }
