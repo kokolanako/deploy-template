@@ -34,7 +34,7 @@ job("MS1-MVN-BUILD") {
         downstreamParameterized {
             trigger('ms1-docker-commit-test') {
                 parameters {
-                    predefinedProp('name', ms1)
+                    predefinedProp('name', 'ms1')
 
                 }
             }
@@ -46,6 +46,7 @@ job("MS1-MVN-BUILD") {
 job('ms1-docker-commit-test'){
     label d1
     environmentVariables(registry: '705249/lol', image: "${env.registry}:${BUILD_NUMBER}",registryCredential = 'dockerhub')
+
     wrappers{
         credentialBinding{
             usernamePassword('user','pw','dockerhub')
@@ -55,10 +56,12 @@ job('ms1-docker-commit-test'){
         copyArtifacts("MS1-MVN-BUILD"){
 
         }
+        shell('docker -v')
         shell('ls -la ')
         shell("echo ${env.image}")
-        shell('docker build . -t'+${env.image})
+        shell('docker build . -t '+${env.image})
         shell('docker images')
+        shell('docker rmi '+${env.image})
     }
 }
 
