@@ -60,16 +60,13 @@ job('ms1-docker-commit-test'){
 
         downstreamParameterized {
             trigger('ms1-docker-deploy-test') {
-                parameters {
-                    predefinedProp("slave", "en-compile-stage-docker")
 
-                }
             }
         }
     }
 }
 job('ms1-docker-deploy-test'){
-    label "$slave"
+    label d1
 
         wrappers{
         credentialsBinding{
@@ -77,7 +74,6 @@ job('ms1-docker-deploy-test'){
             steps{
 
                 shell('echo $user')
-                shell("echo $slave")
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
