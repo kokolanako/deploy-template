@@ -74,13 +74,15 @@ job('ms1-docker-deploy-test'){
         wrappers{
         credentialsBinding{
             usernamePassword('user','pw','dockerhub')
-        }
-    }
-    steps{
+            steps{
+                
+                shell('echo $user')
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
-    }
+            }
+        }
+        }
 
 }
 
