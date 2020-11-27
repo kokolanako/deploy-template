@@ -72,7 +72,7 @@ job('ms1-docker-deploy-test') {
 //            credentialsId("dockerhub")
             steps {
 
-                shell("echo ${user}")
+                shell("echo $item")
 //        shell("docker login -u $user -p $pw")
 //        shell('docker push '+image)
 //        shell('docker logout')
