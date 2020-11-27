@@ -45,7 +45,7 @@ job("MS1-MVN-BUILD") {
 
 job('ms1-docker-commit-test'){
     label d1
-    environmentVariables(registry: '705249/lol', image: "${env.registry}:${BUILD_NUMBER}",registryCredential = 'dockerhub')
+    environmentVariables(registry: '705249/lol', image: "${registry}:${BUILD_NUMBER}",registryCredential = 'dockerhub')
 
     wrappers{
         credentialBinding{
@@ -58,10 +58,10 @@ job('ms1-docker-commit-test'){
         }
         shell('docker -v')
         shell('ls -la ')
-        shell("echo ${env.image}")
-        shell('docker build . -t '+${env.image})
+        shell("echo ${image}")
+        shell('docker build . -t '+${image})
         shell('docker images')
-        shell('docker rmi '+${env.image})
+        shell('docker rmi '+${image})
     }
 }
 
