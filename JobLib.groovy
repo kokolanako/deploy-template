@@ -1,7 +1,7 @@
 def be='https://github.com/kokolanako/be.git'
 def deploy='https://github.com/kokolanako/deploy-template.git'
-def agent_1_mvn='build-slave-maven'
-def agent_2='build-slave-chef'
+def l1='en-jenkins-l-1'
+def l2='en-jenkins-l-2'
 
 job("MS1-checkout") {
     label agent_1_mvn
