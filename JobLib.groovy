@@ -23,7 +23,8 @@ job("MS1-MVN-BUILD") {
 //    }
     steps{
         maven{
-            jdk('Java 11')
+//            mavenInstallation('maven')
+            providedSettings('maven')
             goals('clean package') //Java 11
         }
 
