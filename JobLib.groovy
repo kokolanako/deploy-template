@@ -61,7 +61,7 @@ job('ms1-docker-commit-test'){
         downstreamParameterized {
             trigger('ms1-docker-deploy-test') {
                 parameters {
-                    predefinedProp('slave', d1)
+                    predefinedProp("slave", "en-compile-stage-docker")
 
                 }
             }
