@@ -69,7 +69,7 @@ job('ms1-docker-deploy-test') {
 
     wrappers {
         credentialsBinding {
-            usernamePassword('user', 'pw', 'dockerhub')
+            usernamePassword('dockerhub','user', 'pw' )
 //            accessKeyVariable("user")
 //            secretKeyVariable("pw")
 //            credentialsId("dockerhub")
