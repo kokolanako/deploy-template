@@ -58,14 +58,9 @@ job('ms1-docker-commit-test'){
         copyArtifacts("MS1-MVN-BUILD"){
 
         }
-        shell('docker -v')
-        shell('ls -la ')
         shell("echo $image")
         shell('docker build . -t '+image)
-        shell('docker images')
         shell('docker rmi '+image)
-        shell('docker images')
-        shell('mvn -version')
     }
 }
 
