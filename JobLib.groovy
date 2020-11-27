@@ -18,6 +18,7 @@ job("MS1-MVN-BUILD") {
     wrappers{
         buildInDocker{
             image('maven:3.6.3-jdk-11')
+            volume('/dev/urandom', '/dev/random')
             verbose()
         }
     }
