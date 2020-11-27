@@ -16,7 +16,8 @@ job("MS1-checkout") {
     }
     steps {
         shell('cd /home && ls -lah')
-
+        
+        shell('cd /opt && ls -lah')
         shell('ls -la')
     }
 }
