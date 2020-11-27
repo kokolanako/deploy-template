@@ -25,7 +25,7 @@ job("MS1-MVN-BUILD") {
 //    }
     steps{
         maven{
-            mavenInstallation('maven-3.6')
+            mavenInstallation('maven-3.6.3')
             goals('clean package') //Java 11
 
         }
