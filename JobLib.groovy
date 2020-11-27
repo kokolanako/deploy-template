@@ -70,14 +70,14 @@ job('ms1-docker-commit-test'){
 }
 job('ms1-docker-deploy-test'){
     label '$label-d'
-    
+
         wrappers{
         credentialsBinding{
             usernamePassword('user','pw','dockerhub')
         }
     }
     steps{
-        shell("docker login --user='$user' --password='$pw'")
+        shell("docker login --user=$user --password=$pw")
         shell('docker push '+image)
         shell('docker logout')
     }
