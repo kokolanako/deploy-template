@@ -5,7 +5,6 @@ def l2='en-jenkins-l-2'
 
 job("MS1-MVN-BUILD") {
     label l1
-    jdk('Java 1.11')
     customWorkspace ("workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
         git {
