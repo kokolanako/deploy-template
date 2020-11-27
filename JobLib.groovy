@@ -41,17 +41,13 @@ job("MS1-MVN-BUILD") {
         }
     }
 }
-
+def registry= '705249/lol'
+def image= "705249/lol:${BUILD_NUMBER}"
+def registryCredential = 'dockerhub'
 
 job('ms1-docker-commit-test'){
     label d1
-    environmentVariables{
-
-        env('registry', '705249/lol')
-        env('image', "705249/lol:${BUILD_NUMBER}")
-        env('registryCredential' , 'dockerhub')
-        keepBuildVariables(true)
-    }
+   
 
 //    wrappers{
 //        credentialBinding{
