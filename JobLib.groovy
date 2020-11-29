@@ -41,7 +41,7 @@ job("MS1-MVN-BUILD") {
     }
 }
 def registry = '705249/lol'
-def image = "705249/lol:${BUILD_NUMBER}"
+def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
 def registryCredential = 'dockerhub'
 
 job('ms1-docker-commit-test') {
@@ -90,12 +90,12 @@ job('ssh-connection') {
     label l1
     wrappers {
         credentialsBinding {
-            usernamePassword( 'B','PWD','jenkins-cd-key' )
+            usernamePassword( 'B:PWD','jenkins-cd-key' )
 
         }
     }
     steps {
-        shell('$image_name')
+//        shell('$image_name')
         shell('ls -la')
         shell('ssh -i $PWD -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
 
