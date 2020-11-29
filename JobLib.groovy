@@ -90,7 +90,7 @@ job('ssh-connection') {
     label l1
     wrappers {
         credentialsBinding {
-            usernamePassword( 'PWD','jenkins-cd-key' )
+            usernamePassword( 'B','PWD','jenkins-cd-key' )
 
         }
     }
