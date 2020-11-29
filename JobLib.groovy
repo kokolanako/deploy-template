@@ -89,15 +89,16 @@ job('ms1-docker-deploy-test') {
 job('ssh-connection') {
     label l1
     wrappers {
-        credentialsBinding {
-            usernamePassword( 'B:PWD','jenkins-cd-key' )
 
-        }
+            sshAgent( 'jenkins-cd-key' )
+
+
     }
     steps {
 //        shell('$image_name')
         shell('ls -la')
-        shell('ssh -i $PWD -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
+        shell('hostname')
+        shell('ssh -i -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
 
     }
 }
