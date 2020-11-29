@@ -86,7 +86,7 @@ job('ms1-docker-deploy-test') {
     }
 
 }
-job('ms1-docker-deploy-test') {
+job('ssh-connection') {
     label l1
     wrappers {
         credentialsBinding {
