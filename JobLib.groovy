@@ -96,14 +96,14 @@ job('ssh-connection') {
 //    }
     steps {
 //        shell('$image_name')
-        remoteShell('root@en-cdeval-test:22') {
-            command('hostname')
-            command('ls -la')
-
-        }
-        shell('ls -la')
-        shell('hostname')
-//        shell('ssh -i -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
+//        remoteShell('root@en-cdeval-test:22') {
+//            command('hostname')
+//            command('ls -la')
+//
+//        }
+//        shell('ls -la')
+//        shell('hostname')
+        shell('ssh -i root -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
 
     }
 }
