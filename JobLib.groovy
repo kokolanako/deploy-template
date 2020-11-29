@@ -88,17 +88,22 @@ job('ms1-docker-deploy-test') {
 }
 job('ssh-connection') {
     label l1
-    wrappers {
-
-            sshAgent( 'jenkins-cd-key' )
-
-
-    }
+//    wrappers {
+//
+//            sshAgent( 'jenkins-cd-key' )
+//
+//
+//    }
     steps {
 //        shell('$image_name')
+        remoteShell('root@en-cdeval-test:8082') {
+            command('hostname')
+            command('ls -la')
+
+        }
         shell('ls -la')
         shell('hostname')
-        shell('ssh -i -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
+//        shell('ssh -i -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
 
     }
 }
