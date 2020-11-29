@@ -96,7 +96,7 @@ job('ssh-connection') {
 //    }
     steps {
 //        shell('$image_name')
-        remoteShell('root@en-cdeval-test:8082') {
+        remoteShell('root@en-cdeval-test:22') {
             command('hostname')
             command('ls -la')
 
