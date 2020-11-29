@@ -74,8 +74,35 @@ job('ms1-docker-deploy-test') {
         shell('docker logout')
         shell('docker rmi ' + image)
     }
+    publishers {
+
+        downstreamParameterized {
+            trigger('ssh-connection') {
+                parameters {
+                    predefinedProp('image_name', image)
+                }
+            }
+        }
+    }
 
 }
+job('ms1-docker-deploy-test') {
+    label l1
+    wrappers {
+        credentialsBinding {
+            usernamePassword( 'PWD','jenkins-cd-key' )
+
+        }
+    }
+    steps {
+        shell('$image_name')
+        shell('ls -la')
+        shell('ssh -i $PWD -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
+
+    }
+}
+
+
 
 
 //pipelineJob("PipelineJob-test"){

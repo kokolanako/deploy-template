@@ -55,7 +55,7 @@ pipeline {
 
         stage('SSH') {
             environment {
-                CD_SECRET_KEY = credentials('jenkins-cd-key')
+                CD_SECRET_KEY = credentials('jenkins-cd-key')//better withCredentials
             }
 
             steps {
