@@ -1,10 +1,11 @@
 pipeline {
-    agent {
-        node {
-            label any
-            customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
-        }
-    }
+    agent any
+//            {
+//        node {
+//            label any
+//            customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
+//        }
+//    }
     environment {
         KISTERS_DOCKER_HOME = "/opt/kisters/docker"
         BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/${JOB_NAME}/${BUILD_NUMBER}/console"
