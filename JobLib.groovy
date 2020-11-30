@@ -126,11 +126,12 @@ job('test-deploy') {
 
     steps {
         shell('echo $container')
-//        remoteShell('root@en-cdeval-test:22') {
-//            command('rm -f .env')
-//            command('printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
-//            command('rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay')
-//        }
+        remoteShell('root@en-cdeval-test:22') {
+            command('rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay')
+            command('cd $KISTERS_DOCKER_HOME/yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
+
+        }
+        shell('scp docker-compose.yml root@en-cdeval-test:KISTERS_DOCKER_HOME/yay')
     }
 //    publishers {
 //        downstreamParameterized {
