@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node {
-            label 'build-slave-maven'
+            label any
             customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
         }
     }
