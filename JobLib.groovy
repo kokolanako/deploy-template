@@ -151,7 +151,7 @@ job('test-deploy') {
 //    stash includes: 'docker-compose.yml', name: 'compose'
 //    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
 //    sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-    shell( "scp -i $test docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
+    shell( 'scp -i $test docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay')
 //    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
 
 
