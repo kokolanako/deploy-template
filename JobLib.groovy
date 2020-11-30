@@ -146,12 +146,12 @@ job('test-deploy') {
 
 }
 
-//def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
-echo statusCode
-//                        println statusCode.getClass()
-//if (statusCode != "200") {
-//    error "Curl command was not successful, it delivered status code ${statusCode}"
-//}
+////def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
+//echo statusCode
+////                        println statusCode.getClass()
+////if (statusCode != "200") {
+////    error "Curl command was not successful, it delivered status code ${statusCode}"
+////}
 job('test-curl') {
     label d1 //only on this node ??
 
