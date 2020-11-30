@@ -102,7 +102,7 @@ job('ssh-connection') {
 //
 //        }
 //        shell('ls -la')
-        shell('ssh root@en-cdeval-test hostname')
+        shell('ssh -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
 //        shell('ssh -i root -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
 
     }
