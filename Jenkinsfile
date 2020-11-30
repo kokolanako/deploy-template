@@ -74,10 +74,10 @@ pipeline {
                     sh "printf \"VERSION=${params.VERSION}\" >> .env"
                     stash includes: '.env', name: 'env'
                     stash includes: 'docker-compose.yml', name: 'compose'
-                    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
-                    sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-                    sh "scp -i $test docker-compose.yml root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-                    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down ${params.MS} && docker-compose up -d ${params.MS}'"//variabel je nach MS
+                    sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
+                    sh "scp -i $test -o StrictHostKeyChecking=no .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
+                    sh "scp -i $test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
+                    sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down ${params.MS} && docker-compose up -d ${params.MS}'"//variabel je nach MS
                 }
             }
 
