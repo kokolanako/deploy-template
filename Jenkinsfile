@@ -15,8 +15,9 @@ pipeline {
     parameters {
         // choice(name:'MS', choices:['ms1','ms2'],description:'Pick the microservice to deploy')
         string(name: 'MS', defaultValue: env.job)
-        string(name: 'IMAGE', defaultValue: env.image)
-        string(name: 'CONTAINER', defaultValue: env.container)
+        string(name: 'MS', defaultValue: env.job)
+//        string(name: 'IMAGE', defaultValue: env.image)
+//        string(name: 'CONTAINER', defaultValue: env.container)
 
     }
     stages {
@@ -53,7 +54,7 @@ pipeline {
 //            }
 //        }
 
-        stage('SSH') {
+        stage('SSH Connection') {
             environment {
                 CD_SECRET_KEY = credentials('jenkins-cd-key')//better withCredentials
             }
@@ -66,7 +67,7 @@ pipeline {
 
         }
 
-        stage('Deploy  the app on TEST-remote') {
+        stage('Deploy to Test-System') {
             steps {
                 sh 'ls -la'
                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
@@ -77,14 +78,14 @@ pipeline {
                     sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
                     sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
                     sh "scp -i $test docker-compose.yml root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-                    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
+                    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"//variabel je nach MS
                 }
             }
 
         }
 
 
-        stage('Test on TEST-SERVER') {
+        stage('Test Staging') {
             steps {
                 script {
                     retry(3) {// if fails then retries again
@@ -109,7 +110,7 @@ pipeline {
                         body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
             }
         }
-        stage('Deploy on PRODUCTION-SERVER') {
+        stage('Deploy to Prod-System') {
             agent {
                 node {
                     label 'build-slave-maven'
@@ -154,7 +155,7 @@ pipeline {
 
         }
 
-        stage('Test on PROD-SERVER') {
+        stage('Test against Prod-System') {
             steps {
                 script {
                     retry(3) {// if fails then retries again

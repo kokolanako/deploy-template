@@ -127,13 +127,21 @@ job('test-deploy') {
         }
     }
     steps {
-        shell('ls -la')
-        shell( 'rm -f .env')
-        shell ('printf \"IMAGE_NAME=$image_name\n CONTAINER_NAME=$container\" >> .env')
-        shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'")
-        shell( "scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
-        shell( "scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
-        shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'")
+//        shell('ls -la')
+//        shell( 'rm -f .env')
+//        shell ('printf \"IMAGE_NAME=$image_name\n CONTAINER_NAME=$container\" >> .env')
+//        shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'")
+//        shell( "scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
+//        shell( "scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
+//        shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'")
+        shell("""
+rm -f .env
+printf \"IMAGE_NAME=$image_name\n CONTAINER_NAME=$container\" >> .env
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
+scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
+scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'
+""")
 
     }
     publishers {
@@ -166,7 +174,7 @@ job('test-curl') {
 //        }
 //            dsl{
 
-        statusCode = shell( "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null")
+                statusCode = shell( "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null")
                 shell("echo $statusCode")
 //            }
     }
