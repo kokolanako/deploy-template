@@ -1,7 +1,7 @@
 pipeline {
     agent {
         node {
-            label 'en-jenkins-l-1'
+            label 'build-slave-maven'
             customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
         }
     }
@@ -14,9 +14,8 @@ pipeline {
 
     parameters {
         // choice(name:'MS', choices:['ms1','ms2'],description:'Pick the microservice to deploy')
-        string(name: 'MS', defaultValue: 'ms1')
-        string(name: 'IMAGE', defaultValue: '705249/lol:48')
-        string(name: 'CONTAINER', defaultValue: 'ms1')
+        string(name: 'MS')
+        string(name: 'VERSION')
 
     }
     stages {
@@ -53,9 +52,9 @@ pipeline {
 //            }
 //        }
 
-        stage('SSH') {
+        stage('SSH Connection') {
             environment {
-                CD_SECRET_KEY = credentials('jenkins-cd-key')
+                CD_SECRET_KEY = credentials('jenkins-cd-key')//better withCredentials
             }
 
             steps {
@@ -66,25 +65,25 @@ pipeline {
 
         }
 
-        stage('Deploy  the app on TEST-remote') {
+        stage('Deploy to Test-System') {
             steps {
                 sh 'ls -la'
                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
                     sh 'rm -f .env'
-                    sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
+                    sh "printf \"VERSION=${params.VERSION}\" >> .env"
                     stash includes: '.env', name: 'env'
                     stash includes: 'docker-compose.yml', name: 'compose'
                     sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
                     sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
                     sh "scp -i $test docker-compose.yml root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-                    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
+                    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down ${params.MS} && docker-compose up -d ${params.MS}'"//variabel je nach MS
                 }
             }
 
         }
 
 
-        stage('Test on TEST-SERVER') {
+        stage('Test Staging') {
             steps {
                 script {
                     retry(3) {// if fails then retries again
@@ -109,10 +108,10 @@ pipeline {
                         body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
             }
         }
-        stage('Deploy on PRODUCTION-SERVER') {
+        stage('Deploy to Prod-System') {
             agent {
                 node {
-                    label 'en-jenkins-l-2'
+                    label 'build-slave-maven'
                     customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
                 }
             }
@@ -130,7 +129,7 @@ pipeline {
 
                 script {
                     def input = input message: 'User input required',
-                            parameters: [choice(name: 'inputC', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
+                            parameters: [choice(name: 'Proceed deployment to PROD? ', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
                     echo input
                     if (input == 'NO') {
                         error "The build was stopped by ${username}"
@@ -154,7 +153,7 @@ pipeline {
 
         }
 
-        stage('Test on PROD-SERVER') {
+        stage('Test against Prod-System') {
             steps {
                 script {
                     retry(3) {// if fails then retries again
@@ -175,15 +174,18 @@ pipeline {
         }
 
     }
-    post {
-        failure {
-            script {
+//    post {
+//        failure {
+//            script {
+//
+//                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
+//                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
+//            }
+//        }
+//    }
 
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
-                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
-            }
-        }
-    }
+
+    
 //    post{
 //        always{
 //            node('en-jenkins-l-2'){
