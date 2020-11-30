@@ -141,10 +141,10 @@ job('test-deploy') {
         shell ('printf \"IMAGE_NAME=$image_name\n CONTAINER_NAME=$container\" >> .env')
 //    stash includes: '.env', name: 'env'
 //    stash includes: 'docker-compose.yml', name: 'compose'
-        shell( "ssh -i $test -T root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'")
-        shell( 'scp -i $test .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay')
-        shell( 'scp -i $test docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay')
-        shell( "ssh -i $test -T root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'")
+        shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'")
+        shell( "scp -i \$test .env -o StrictHostKeyChecking=no root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
+        shell( "scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
+        shell( "ssh -i \$test -T root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'")
 
 
 //        remoteShell('root@en-cdeval-test:22') {
