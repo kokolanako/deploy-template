@@ -131,12 +131,24 @@ job('test-deploy') {
     }
     steps {
         shell('echo $container')
-        remoteShell('root@en-cdeval-test:22') {
-            command('rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay')
-            command('cd $KISTERS_DOCKER_HOME/yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
 
+        shell('rm -rf yay && mkdir yay')
+        shell('cd yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
+        shell('cp docker-compose.yml yay')
+        shell('ls -la')
+//        remoteShell('root@en-cdeval-test:22') {
+//            command('rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay')
+//            command('cd $KISTERS_DOCKER_HOME/yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
+////            copyArtifacts("MS1-MVN-BUILD") {
+////            }
+//
+//        }
+//        shell('scp docker-compose.yml root@en-cdeval-test:KISTERS_DOCKER_HOME/yay')
+    }
+    publishers {
+        publishScp('root@en-cdeval-test') {
+            entry('yay/**', '$KISTERS_DOCKER_HOME/yay', true)
         }
-        shell('scp docker-compose.yml root@en-cdeval-test:KISTERS_DOCKER_HOME/yay')
     }
 //    publishers {
 //        downstreamParameterized {
