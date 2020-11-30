@@ -158,7 +158,14 @@ job('test-curl') {
         }
     }
     steps {
-        def statusCode = shell(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
+        sleep(4)
+        def statusCode=httpRequest('http://en-cdeval-test:8081/test?country=Aus') {
+            httpMode('GET')
+            returnCodeBuildRelevant()
+            logResponseBody()
+        }
+
+//        def statusCode = shell(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
         shell("echo $statusCode")
     }
 
