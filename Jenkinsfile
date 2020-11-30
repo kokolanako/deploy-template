@@ -14,10 +14,8 @@ pipeline {
 
     parameters {
         // choice(name:'MS', choices:['ms1','ms2'],description:'Pick the microservice to deploy')
-        string(name: 'MS', defaultValue: env.job)
-        string(name: 'MS', defaultValue: env.job)
-//        string(name: 'IMAGE', defaultValue: env.image)
-//        string(name: 'CONTAINER', defaultValue: env.container)
+        string(name: 'MS')
+        string(name: 'VERSION')
 
     }
     stages {
@@ -72,13 +70,13 @@ pipeline {
                 sh 'ls -la'
                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
                     sh 'rm -f .env'
-                    sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
+                    sh "printf \"VERSION=${params.VERSION}\" >> .env"
                     stash includes: '.env', name: 'env'
                     stash includes: 'docker-compose.yml', name: 'compose'
                     sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
                     sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
                     sh "scp -i $test docker-compose.yml root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-                    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"//variabel je nach MS
+                    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down ${params.MS} && docker-compose up -d ${params.MS}'"//variabel je nach MS
                 }
             }
 
@@ -131,7 +129,7 @@ pipeline {
 
                 script {
                     def input = input message: 'User input required',
-                            parameters: [choice(name: 'inputC', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
+                            parameters: [choice(name: 'Proceed deployment to PROD? ', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
                     echo input
                     if (input == 'NO') {
                         error "The build was stopped by ${username}"
@@ -176,15 +174,18 @@ pipeline {
         }
 
     }
-    post {
-        failure {
-            script {
+//    post {
+//        failure {
+//            script {
+//
+//                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
+//                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
+//            }
+//        }
+//    }
 
-                emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
-                        body: "<a href='${env.BUILD_URL}'>click to trace the failure</a>";
-            }
-        }
-    }
+
+    
 //    post{
 //        always{
 //            node('en-jenkins-l-2'){

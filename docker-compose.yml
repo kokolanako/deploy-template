@@ -1,10 +1,15 @@
 
 version: '3'
 services:
-  backend-app:
-    container_name: "${CONTAINER_NAME}"
-    image: "${IMAGE_NAME}"
+  ms1:
+    container_name: "ms1"
+    image: "705249/lol:${VERSION}"
     ports:
       - 8081:8081
+  ms2:
+    container_name: "ms2"
+    image: "705249/be:${VERSION}"
+    ports:
+      - 8082:8081
 
 

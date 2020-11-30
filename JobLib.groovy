@@ -126,13 +126,7 @@ job('test-deploy') {
         }
     }
     steps {
-//        shell('ls -la')
-//        shell( 'rm -f .env')
-//        shell ('printf \"IMAGE_NAME=$image_name\n CONTAINER_NAME=$container\" >> .env')
-//        shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'")
-//        shell( "scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
-//        shell( "scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
-//        shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'")
+
         shell("""
 rm -f .env
 printf \"IMAGE_NAME=\$image_name\n CONTAINER_NAME=\$container\" >> .env
@@ -150,12 +144,7 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DO
 
 }
 
-////def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
-//echo statusCode
-////                        println statusCode.getClass()
-////if (statusCode != "200") {
-////    error "Curl command was not successful, it delivered status code ${statusCode}"
-////}
+
 job('test-curl') {
     label d1 //only on this node ??
 
@@ -176,28 +165,3 @@ fi
 
 }
 
-
-//pipelineJob("PipelineJob-test"){
-//    environmentVariables {
-//        // these vars could be specified by parameters of this job
-//        env('job', 'ms1')
-//        env('image', '705249/lol:48') //comma separated string
-//        env('container', 'ms1')
-//    }
-//    definition {
-////        cpsScm {
-////            scm {
-////                git {
-////                    remote {
-////                        url(deploy)
-////                    }
-////                    branch("*/jobDSL")
-////                }
-////            }
-////            scriptPath("Jenkinsfile")
-////        }
-//        cps{
-//            script(readFileFromWorkspace("Jenkinsfile"))
-//        }
-//    }
-//}
