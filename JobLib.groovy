@@ -54,7 +54,7 @@ job('ms1-docker-commit-test') {
         shell('docker build . -t ' + image)
     }
     publishers {
-        downstream ('ms1-docker-deploy-test','UNSTABLE')
+        downstream('ms1-docker-deploy-test', 'UNSTABLE')
 
     }
 }
@@ -63,14 +63,14 @@ job('ms1-docker-deploy-test') {
 
     wrappers {
         credentialsBinding {
-            usernamePassword('DOCKER_USER', 'DOCKER_PW','dockerhub' )
+            usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
 
         }
     }
     steps {
         shell('echo $DOCKER_USER')
         shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
-        shell('docker push '+image)
+        shell('docker push ' + image)
         shell('docker logout')
         shell('docker rmi ' + image)
     }
@@ -90,7 +90,6 @@ job('ssh-connection') {
     label d1 //only on this node
 
 
-
     steps {
         remoteShell('root@en-cdeval-test:22') {//SSH Plugin
             command('hostname')
@@ -101,7 +100,7 @@ job('ssh-connection') {
             trigger('test-deploy') {
                 parameters {
                     predefinedProp('image_name', '$image_name')
-                    predefinedProp('container','$container')
+                    predefinedProp('container', '$container')
                 }
             }
         }
@@ -123,7 +122,7 @@ job('test-deploy') {
     }
     wrappers {
         credentialsBinding {
-            file('test','remote-deploy')
+            file('test', 'remote-deploy')
         }
     }
     steps {
@@ -145,7 +144,7 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DO
 
     }
     publishers {
-        downstream("test-curl","SUCCESS")
+        downstream("test-curl", "SUCCESS")
 
     }
 
@@ -162,25 +161,20 @@ job('test-curl') {
 
     wrappers {
         credentialsBinding {
-            file('test','remote-deploy')
+            file('test', 'remote-deploy')
         }
     }
     steps {
-        sleep(4)
-//        def statusCode=httpRequest('http://en-cdeval-test:8081/test?country=Aus') {
-//            httpMode('GET')
-//            returnCodeBuildRelevant()
-//            logResponseBody()
-//        }
-//            dsl{
-
-                statusCode = shell( "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null")
-                shell("echo $statusCode")
-//            }
+        shell("""
+sleep 4
+statusCode=\$(curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null)
+if [ "\$statusCode" -ne "200" ]; then 
+    exit 1 
+fi
+""")
     }
 
 }
-
 
 
 //pipelineJob("PipelineJob-test"){
