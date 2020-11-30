@@ -3,6 +3,9 @@ def deploy = 'https://github.com/kokolanako/deploy-template.git'
 def l1 = 'build-slave-maven'
 def d1 = 'en-compile-stage-docker'
 def ms1 = 'ms1'
+def registry = '705249/lol'
+def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
+def registryCredential = 'dockerhub'
 
 job("MS1-MVN-BUILD") {
     label l1
@@ -40,17 +43,14 @@ job("MS1-MVN-BUILD") {
         }
     }
 }
-def registry = '705249/lol'
-def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
-def registryCredential = 'dockerhub'
+
 
 job('ms1-docker-commit-test') {
     label d1
     steps {
         copyArtifacts("MS1-MVN-BUILD") {
         }
-        shell('echo $name')
-        shell("echo $image")
+
         shell('docker build . -t ' + image)
     }
     publishers {
@@ -78,8 +78,8 @@ job('ms1-docker-deploy-test') {
         downstreamParameterized {
             trigger('ssh-connection') {
                 parameters {
-                    predefinedProp('image_name', image)
-                    predefinedProp('container', ms1)
+                    predefinedProp('VERSION', $BUILD_NUMBER)
+                    predefinedProp('MS', ms1)
                 }
             }
         }
@@ -99,8 +99,8 @@ job('ssh-connection') {
         downstreamParameterized {
             trigger('test-deploy') {
                 parameters {
-                    predefinedProp('image_name', '$image_name')
-                    predefinedProp('container', '$container')
+                    predefinedProp('VERSION', $BUILD_NUMBER)
+                    predefinedProp('MS', ms1)
                 }
             }
         }
@@ -129,11 +129,11 @@ job('test-deploy') {
 
         shell("""
 rm -f .env
-printf \"IMAGE_NAME=\$image_name\n CONTAINER_NAME=\$container\" >> .env
+printf \"VERSION=$BUILD_NUMBER\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
 """)
 
     }
@@ -162,6 +162,41 @@ if [ "\$statusCode" -ne "200" ]; then
 fi
 """)
     }
+    publishers {
+//        downstream("prod-deploy", "SUCCESS")
+        buildPipelineTrigger('prod-deploy') {
+
+        }
+    }
+
+
+}
+job('prod-deploy') {
+    label d1 //only on this node
+    scm {
+        git {
+            remote { url(deploy) }
+            branch('jobDSL')
+        }
+    }
+    wrappers {
+        credentialsBinding {
+            file('test', 'remote-deploy')
+        }
+    }
+    steps {
+
+        shell("""
+rm -f .env
+printf \"VERSION=$BUILD_NUMBER\" >> .env
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
+scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
+scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
+""")
+
+    }
+
 
 }
 
