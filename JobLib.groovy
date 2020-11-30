@@ -75,11 +75,11 @@ job('ms1-docker-deploy-test') {
         shell('docker rmi ' + image)
     }
     publishers {
-
         downstreamParameterized {
             trigger('ssh-connection') {
                 parameters {
                     predefinedProp('image_name', image)
+                    predefinedProp('container', ms1)
                 }
             }
         }
@@ -90,15 +90,58 @@ job('ssh-connection') {
     label d1 //only on this node
 
     steps {
-        shell('$image_name')
         remoteShell('root@en-cdeval-test:22') {
-
             command('hostname')
         }
-
+    }
+    publishers {
+        downstreamParameterized {
+            trigger('test-deploy') {
+                parameters {
+                    predefinedProp('image_name', '$image_name')
+                    predefinedProp('container','$container')
+                }
+            }
+        }
     }
 }
+//withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
+//    sh 'rm -f .env'
+//    sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
+//    stash includes: '.env', name: 'env'
+//    stash includes: 'docker-compose.yml', name: 'compose'
+//    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
+//    sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
+//    sh "scp -i $test docker-compose.yml root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
+//    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
+//}
 
+def KISTERS_DOCKER_HOME = "/opt/kisters/docker"
+def BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/${JOB_NAME}/${BUILD_NUMBER}/console"
+def EMAIL_TO = "Polina.Mrachkovskaya@kisters.de"
+
+
+job('test-deploy') {
+    label d1 //only on this node
+
+    steps {
+        shell('echo $container')
+//        remoteShell('root@en-cdeval-test:22') {
+//            command('rm -f .env')
+//            command('printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
+//            command('rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay')
+//        }
+    }
+//    publishers {
+//        downstreamParameterized {
+//            trigger('test-deploy') {
+//                parameters {
+//                    predefinedProp('image_name', '$image')
+//                }
+//            }
+//        }
+//    }
+}
 
 
 
