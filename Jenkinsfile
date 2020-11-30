@@ -68,7 +68,7 @@ pipeline {
 
         stage('Deploy to Test-System') {
             steps {
-                sh 'ls -la'
+                sh "${params.MS}"
                 withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
                     sh 'rm -f .env'
                     sh "printf \"VERSION=${params.VERSION}\" >> .env"
