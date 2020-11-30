@@ -133,47 +133,29 @@ job('test-deploy') {
     }
     wrappers {
         credentialsBinding {
-//            usernamePassword('TEST_USER', 'TEST_PW','jenkins-cd-key' )
             file('test','remote-deploy')
         }
     }
     steps {
-        shell('echo $container')
-
-//        shell('rm -rf yay && mkdir yay')
-//        shell('cd yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
-//        shell('cp docker-compose.yml yay')
-        shell('ls -la')
-
-        //    sh 'rm -f .env'
-//    sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
+        shell( 'rm -f .env')
+        shell ('printf \"IMAGE_NAME=$image_name\n CONTAINER_NAME=$container\" >> .env')
 //    stash includes: '.env', name: 'env'
 //    stash includes: 'docker-compose.yml', name: 'compose'
-//    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
-//    sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-    shell( 'scp -i $test docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay')
-//    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
+        shell( "ssh -i $test -T root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'")
+        shell( 'scp -i $test .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay')
+        shell( 'scp -i $test docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay')
+        shell( "ssh -i $test -T root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'")
 
 
 //        remoteShell('root@en-cdeval-test:22') {
 //            command('rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay')
 //            command('cd $KISTERS_DOCKER_HOME/yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
-////            copyArtifacts("MS1-MVN-BUILD") {
-////            }
+
 //
 //        }
 //        shell('scp docker-compose.yml root@en-cdeval-test:KISTERS_DOCKER_HOME/yay')
     }
 
-//    publishers {
-//        downstreamParameterized {
-//            trigger('test-deploy') {
-//                parameters {
-//                    predefinedProp('image_name', '$image')
-//                }
-//            }
-//        }
-//    }
 }
 
 
