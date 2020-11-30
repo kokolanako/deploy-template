@@ -133,8 +133,8 @@ job('test-deploy') {
     }
     wrappers {
         credentialsBinding {
-//            usernamePassword('TEST_USER', 'TEST_PW','en-cdeval-test' )
-            file('test','jenkins-cd-key')
+//            usernamePassword('TEST_USER', 'TEST_PW','jenkins-cd-key' )
+            file('test','remote-deploy')
         }
     }
     steps {
