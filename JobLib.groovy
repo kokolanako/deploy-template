@@ -89,6 +89,8 @@ job('ms1-docker-deploy-test') {
 job('ssh-connection') {
     label d1 //only on this node
 
+
+
     steps {
         remoteShell('root@en-cdeval-test:22') {
             command('hostname')
@@ -129,13 +131,30 @@ job('test-deploy') {
             branch('jobDSL')
         }
     }
+    wrappers {
+        credentialsBinding {
+//            usernamePassword('TEST_USER', 'TEST_PW','en-cdeval-test' )
+            file('test','jenkins-cd-key')
+        }
+    }
     steps {
         shell('echo $container')
 
-        shell('rm -rf yay && mkdir yay')
-        shell('cd yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
-        shell('cp docker-compose.yml yay')
+//        shell('rm -rf yay && mkdir yay')
+//        shell('cd yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
+//        shell('cp docker-compose.yml yay')
         shell('ls -la')
+
+        //    sh 'rm -f .env'
+//    sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
+//    stash includes: '.env', name: 'env'
+//    stash includes: 'docker-compose.yml', name: 'compose'
+//    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
+//    sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
+    shell( "scp -i $test docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
+//    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
+
+
 //        remoteShell('root@en-cdeval-test:22') {
 //            command('rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay')
 //            command('cd $KISTERS_DOCKER_HOME/yay && printf \\"IMAGE_NAME=$image_name\\n CONTAINER_NAME=$container\\" >> .env')
@@ -145,11 +164,7 @@ job('test-deploy') {
 //        }
 //        shell('scp docker-compose.yml root@en-cdeval-test:KISTERS_DOCKER_HOME/yay')
     }
-    publishers {
-        publishScp('root@en-cdeval-test') {
-            entry('yay/**', '$KISTERS_DOCKER_HOME/yay', true)
-        }
-    }
+
 //    publishers {
 //        downstreamParameterized {
 //            trigger('test-deploy') {
