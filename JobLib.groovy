@@ -137,7 +137,8 @@ job('test-deploy') {
 
     }
     publishers {
-        downstream('test-curl','SUCCESS') {
+        downstream("test-curl","UNSTABLE") {
+
 
 
         }
