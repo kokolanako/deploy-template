@@ -123,7 +123,12 @@ def EMAIL_TO = "Polina.Mrachkovskaya@kisters.de"
 
 job('test-deploy') {
     label d1 //only on this node
-
+    scm {
+        git {
+            remote { url(deploy) }
+            branch('jobDSL')
+        }
+    }
     steps {
         shell('echo $container')
         remoteShell('root@en-cdeval-test:22') {
