@@ -78,7 +78,7 @@ job('ms1-docker-deploy-test') {
         downstreamParameterized {
             trigger('ssh-connection') {
                 parameters {
-                    predefinedProp('VERSION', $BUILD_NUMBER)
+                    predefinedProp('VERSION', "${BUILD_NUMBER}")
                     predefinedProp('MS', ms1)
                 }
             }
@@ -99,7 +99,7 @@ job('ssh-connection') {
         downstreamParameterized {
             trigger('test-deploy') {
                 parameters {
-                    predefinedProp('VERSION', $BUILD_NUMBER)
+                    predefinedProp('VERSION', "${BUILD_NUMBER}")
                     predefinedProp('MS', ms1)
                 }
             }
@@ -129,7 +129,7 @@ job('test-deploy') {
 
         shell("""
 rm -f .env
-printf \"VERSION=$BUILD_NUMBER\" >> .env
+printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
@@ -188,7 +188,7 @@ job('prod-deploy') {
 
         shell("""
 rm -f .env
-printf \"VERSION=$BUILD_NUMBER\" >> .env
+printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
