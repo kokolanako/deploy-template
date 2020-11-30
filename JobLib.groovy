@@ -99,8 +99,8 @@ job('ssh-connection') {
     steps {
 //        shell('$image_name')
 //        remoteShell('root@en-cdeval-test:22') {
-            command('pwd')
-            command('ls -la')
+            shell('pwd')
+            shell('ls -la')
 //
 //        }
 //        shell('ls -la')
