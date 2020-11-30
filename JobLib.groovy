@@ -88,22 +88,24 @@ job('ms1-docker-deploy-test') {
 }
 job('ssh-connection') {
     label l1
-//    wrappers {
-//
-//            sshAgent( 'jenkins-cd-key' )
-//
-//
-//    }
+
+//    https://support.cloudbees.com/hc/en-us/articles/222838288-SSH-Credentials-Management-with-Jenkins
+    wrappers {
+
+            sshAgent( 'jenkins-cd-key' )
+
+
+    }
     steps {
 //        shell('$image_name')
 //        remoteShell('root@en-cdeval-test:22') {
-//            command('hostname')
-//            command('ls -la')
+            command('hostname')
+            command('ls -la')
 //
 //        }
 //        shell('ls -la')
 //        shell('ssh -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
-        shell('ssh -i root -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
+//        shell('ssh -i root -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
 
     }
 }
