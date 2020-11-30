@@ -90,19 +90,19 @@ job('ssh-connection') {
     label l1
 
 //    https://support.cloudbees.com/hc/en-us/articles/222838288-SSH-Credentials-Management-with-Jenkins
-    wrappers {
-
-            sshAgent( 'jenkins-cd-key' )
-
-
-    }
+//    wrappers {
+//
+//            sshAgent( 'jenkins-cd-key' )
+//
+//
+//    }
     steps {
 //        shell('$image_name')
-//        remoteShell('root@en-cdeval-test:22') {
-            shell('pwd')
-            shell('ls -la')
+        remoteShell('root@en-cdeval-test:22') {
+            command('pwd')
+            command('ls -la')
 //
-//        }
+        }
 //        shell('ls -la')
 //        shell('ssh -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
 //        shell('ssh -i root -v -T -o StrictHostKeyChecking=no root@en-cdeval-test hostname')
