@@ -107,16 +107,6 @@ job('ssh-connection') {
         }
     }
 }
-//withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
-//    sh 'rm -f .env'
-//    sh "printf \"IMAGE_NAME=${params.IMAGE}\n CONTAINER_NAME=${params.CONTAINER}\" >> .env"
-//    stash includes: '.env', name: 'env'
-//    stash includes: 'docker-compose.yml', name: 'compose'
-//    sh "ssh -i $test -T root@en-cdeval-test 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir ${env.KISTERS_DOCKER_HOME}/yay'"
-//    sh "scp -i $test .env root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-//    sh "scp -i $test docker-compose.yml root@en-cdeval-test:${env.KISTERS_DOCKER_HOME}/yay"
-//    sh "ssh -i $test -T root@en-cdeval-test 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
-//}
 
 def KISTERS_DOCKER_HOME = "/opt/kisters/docker"
 def BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/${JOB_NAME}/${BUILD_NUMBER}/console"
@@ -145,6 +135,33 @@ job('test-deploy') {
         shell( "scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay")
         shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'")
 
+    }
+    publishers {
+        downstream('test-curl','SUCCESS') {
+
+
+        }
+    }
+
+}
+
+//def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
+echo statusCode
+//                        println statusCode.getClass()
+//if (statusCode != "200") {
+//    error "Curl command was not successful, it delivered status code ${statusCode}"
+//}
+job('test-curl') {
+    label d1 //only on this node ??
+
+    wrappers {
+        credentialsBinding {
+            file('test','remote-deploy')
+        }
+    }
+    steps {
+        def statusCode = shell(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
+        shell("echo $statusCode")
     }
 
 }
