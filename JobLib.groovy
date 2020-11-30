@@ -87,7 +87,7 @@ job('ms1-docker-deploy-test') {
 
 }
 job('ssh-connection') {
-    label l1
+    label d1
 
 //    https://support.cloudbees.com/hc/en-us/articles/222838288-SSH-Credentials-Management-with-Jenkins
 //    wrappers {
@@ -101,6 +101,7 @@ job('ssh-connection') {
         remoteShell('root@en-cdeval-test:22') {
             command('pwd')
             command('ls -la')
+            command('hostname')
 //
         }
 //        shell('ls -la')
