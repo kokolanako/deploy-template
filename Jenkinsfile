@@ -110,12 +110,13 @@ pipeline {
             }
         }
         stage('Deploy to Prod-System') {
-            agent {
-                node {
-                    label 'build-slave-maven'
-                    customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
-                }
-            }
+//            agent
+//                    {
+//                node {
+//                    label 'build-slave-maven'
+//                    customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
+//                }
+//            }
 
 //            input{
 //
