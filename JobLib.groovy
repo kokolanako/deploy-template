@@ -159,14 +159,16 @@ job('test-curl') {
     }
     steps {
         sleep(4)
-        def statusCode=httpRequest('http://en-cdeval-test:8081/test?country=Aus') {
-            httpMode('GET')
-            returnCodeBuildRelevant()
-            logResponseBody()
-        }
+//        def statusCode=httpRequest('http://en-cdeval-test:8081/test?country=Aus') {
+//            httpMode('GET')
+//            returnCodeBuildRelevant()
+//            logResponseBody()
+//        }
+//            dsl{
 
-//        def statusCode = shell(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
-        shell("echo $statusCode")
+        statusCode = shell( "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null")
+                shell("echo $statusCode")
+//            }
     }
 
 }
