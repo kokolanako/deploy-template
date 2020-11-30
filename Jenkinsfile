@@ -148,7 +148,7 @@ pipeline {
                     sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir -p ${env.KISTERS_DOCKER_HOME}/yay'"
                     sh "scp -i $test .env root@en-cdeval-prod:${env.KISTERS_DOCKER_HOME}/yay"
                     sh "scp -i $test docker-compose.yml root@en-cdeval-prod:${env.KISTERS_DOCKER_HOME}/yay"
-                    sh "ssh -i $test -T root@en-cdeval-prod 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down && docker-compose up -d'"
+                    sh "ssh -i $test -T root@en-cdeval-prod 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose down ${params.MS} && docker-compose up -d ${params.MS}'"
                 }
             }
 
