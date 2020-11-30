@@ -136,7 +136,7 @@ job('test-deploy') {
 //        shell( "ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose down && docker-compose up -d'")
         shell("""
 rm -f .env
-printf \"IMAGE_NAME=$image_name\n CONTAINER_NAME=$container\" >> .env
+printf \"IMAGE_NAME=\$image_name\n CONTAINER_NAME=\$container\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
