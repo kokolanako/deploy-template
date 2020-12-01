@@ -85,7 +85,7 @@ job("ms2-commit") {
 }
 
 for (String ms: msArr){
-    def image='${dockerhub_registry}:'+${BUILD_NUMBER}
+    def image="\${dockerhub_registry}:"+"${BUILD_NUMBER}"
     job(ms-'-docker-commit') {
         label d1
         steps {
@@ -95,7 +95,7 @@ for (String ms: msArr){
             shell('docker build . -t '+image )
         }
         publishers {
-            def next=ms+'-docker-deploy'
+            def next=ms+"-docker-deploy"
             downstream(next, 'SUCCESS')
 
         }
