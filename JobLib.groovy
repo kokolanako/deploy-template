@@ -3,6 +3,7 @@ def deploy = 'https://github.com/kokolanako/deploy-template.git'
 def l1 = 'build-slave-maven'
 def d1 = 'en-compile-stage-docker'
 def ms1 = 'ms1'
+def ms2='ms2'
 def registry = '705249/lol'
 def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
 def registryCredential = 'dockerhub'
@@ -16,6 +17,42 @@ job("ms1-commit") {
         git {
             remote { url(be) }
             branch('ms1')
+        }
+    }
+
+    steps {
+        maven {
+            mavenInstallation('maven-3.6.3')
+            goals('clean package') //Java 11
+        }
+        shell('ls -la')
+        shell('pwd')
+
+    }
+    publishers {
+        archiveArtifacts {
+            pattern('**/target/**SNAPSHOT.jar')
+            pattern('Dockerfile')
+            onlyIfSuccessful()
+        }
+        downstreamParameterized {
+            trigger('ms1-docker-commit') {
+                parameters {
+                    predefinedProp('name', 'ms1')
+                }
+            }
+        }
+    }
+}
+job("ms2-commit") {
+    label l1
+    jdk("jdk11")
+
+//    customWorkspace ("${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}")
+    scm {
+        git {
+            remote { url(be) }
+            branch('ms2')
         }
     }
 
@@ -205,7 +242,7 @@ printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'docker login -u \$DOCKER_USER -p \$DOCKER_PW && cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
 """)
 
     }
