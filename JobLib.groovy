@@ -195,16 +195,17 @@ job('prod-deploy') {
         shell('echo $OPTION')
 
         shell("""
-if  [ "\$OPTION" -ne "stop" ]
-then
-    echo \$OPTION
-    rm -f .env
-    printf \"VERSION=${BUILD_NUMBER}\" >> .env
-    ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
-    scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
-    scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
-    ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'docker login -u \$DOCKER_USER -p \$DOCKER_PW && cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
+if  [ "\$OPTION" = "stop" ]; then
+    echo "The pipeline was stopped intentionally. The user did not want to deploy to production."
+    exit 0
 fi
+echo \$OPTION
+rm -f .env
+printf \"VERSION=${BUILD_NUMBER}\" >> .env
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
+scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
+scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'docker login -u \$DOCKER_USER -p \$DOCKER_PW && cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
 """)
 
     }
