@@ -92,6 +92,8 @@ for (String ms: msArr){
             copyArtifacts(ms+"-commit") {
             }
             shell("echo $image")
+            shell("""
+echo \${dockerhub_registry}""")
             shell("docker build . -t "+image )
         }
         publishers {
@@ -221,7 +223,7 @@ job('test-deploy') {
     }
 
     steps {
-        shell('echo $MS')
+        shell("echo \${MS}")
         shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell("""
 rm -f .env
@@ -229,7 +231,7 @@ printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d "\${MS}"'
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d \${MS}'
 """)
 
     }
