@@ -183,6 +183,7 @@ job('ssh-connection-check') {
 
 
     steps {
+        shell('echo $MS')
         remoteShell('root@en-cdeval-test:22') {//SSH Plugin
             command('hostname')
         }
@@ -192,7 +193,7 @@ job('ssh-connection-check') {
             trigger('test-deploy') {
                 parameters {
                     predefinedProp('VERSION', "${BUILD_NUMBER}")
-                    predefinedProp('MS', '${MS}')
+                    predefinedProp('MS', '$MS')
                 }
             }
         }
@@ -220,6 +221,7 @@ job('test-deploy') {
     }
 
     steps {
+        shell('echo $MS')
         shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell("""
 rm -f .env
@@ -236,7 +238,7 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DO
             trigger('test-curl') {
                 parameters {
                     predefinedProp('VERSION', '${VERSION}')
-                    predefinedProp('MS', '${MS}')
+                    predefinedProp('MS', '$MS')
                 }
             }
         }
@@ -276,7 +278,7 @@ fi
             trigger('demo') {
                 parameters {
                     predefinedProp('VERSION', '${VERSION}')
-                    predefinedProp('MS', '${MS}')
+                    predefinedProp('MS', '$MS')
                 }
             }
         }
