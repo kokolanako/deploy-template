@@ -158,7 +158,7 @@ job('test-curl') {
     steps {
         shell("""
 sleep 4
-statusCode=\$(curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null)
+statusCode=\$(curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/tes?country=Aus' -o /dev/null)
 if [ "\$statusCode" -ne "200" ]; then 
     exit 1 
 fi
