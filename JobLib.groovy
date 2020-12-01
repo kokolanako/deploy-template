@@ -85,7 +85,7 @@ job("ms2-commit") {
 }
 
 for (String ms: msArr){
-    job(ms-"-docker-commit") {
+    job(ms+"-docker-commit") {
         label d1
         steps {
             def image="\${dockerhub_registry}:"+"${BUILD_NUMBER}"
