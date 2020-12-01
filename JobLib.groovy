@@ -203,13 +203,16 @@ fi
     }
     publishers {
         buildPipelineTrigger('prod-deploy')
-        downstream('demo')
+        downstream('demo', "SUCCESS")
+
         mailer('Polina.Mrachkovskaya@kisters.de', true, true)
     }
 }
-job('demo'){
+job('demo') {
     label l1
-    shell('sleep 5 && echo DEMO')
+    steps {
+        shell('sleep 5 && echo DEMO')
+    }
 }
 
 job('prod-deploy') {
