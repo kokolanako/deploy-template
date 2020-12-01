@@ -185,7 +185,7 @@ job('ssh-connection-check') {
             trigger('test-deploy') {
                 parameters {
                     predefinedProp('VERSION', "${BUILD_NUMBER}")
-                    predefinedProp('MS', ${MS})
+                    predefinedProp('MS', '${MS}')
                 }
             }
         }
@@ -220,7 +220,7 @@ printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d ${MS}'
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d \${MS}'
 """)
 
     }
@@ -260,16 +260,16 @@ fi
         mailer(EMAIL_TO, true, true)
         buildPipelineTrigger('prod-deploy'){
             parameters {
-                predefinedProp('VERSION', ${VERSION})
-                predefinedProp('MS', ${MS})
+                predefinedProp('VERSION', '${VERSION}')
+                predefinedProp('MS', '${MS}')
             }
         }
 
         downstreamParameterized {
             trigger('demo') {
                 parameters {
-                    predefinedProp('VERSION', ${VERSION})
-                    predefinedProp('MS', ${MS})
+                    predefinedProp('VERSION', '${VERSION}')
+                    predefinedProp('MS', '${MS}')
                 }
             }
         }
@@ -319,7 +319,7 @@ printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d \${MS}'
 """)
 
     }
