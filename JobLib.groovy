@@ -262,7 +262,6 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DO
 
 }
 job('finish'){
-    label any
     blockOn(['demo','prod-deploy'])
     steps{
         shell('echo FINISH')
