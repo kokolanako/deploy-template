@@ -3,7 +3,7 @@ def deploy = 'https://github.com/kokolanako/deploy-template.git'
 def l1 = 'build-slave-maven'
 def d1 = 'en-compile-stage-docker'
 def ms1 = 'ms1'
-def ms2='ms2'
+def ms2 = 'ms2'
 def registry = '705249/lol'
 def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
 def registryCredential = 'dockerhub'
@@ -202,13 +202,11 @@ fi
 """)
     }
     publishers {
-        buildPipelineTrigger('prod-deploy') 
+        buildPipelineTrigger('prod-deploy')
         mailer('Polina.Mrachkovskaya@kisters.de', true, true)
-        }
     }
-
-
 }
+
 job('prod-deploy') {
     label d1 //only on this node
 
@@ -218,8 +216,8 @@ job('prod-deploy') {
             branch('jobDSL')
         }
     }
-    parameters{
-        choiceParam('OPTION',['deploy to prod','stop'])
+    parameters {
+        choiceParam('OPTION', ['deploy to prod', 'stop'])
     }
     wrappers {
         credentialsBinding {
@@ -250,7 +248,7 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DO
 
 }
 
-nestedView ('Seminar-Pipelines') {
+nestedView('Seminar-Pipelines') {
     views {
         buildPipelineView('ms1-commit pipeline') {
             displayedBuilds(5)
