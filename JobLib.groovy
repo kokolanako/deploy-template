@@ -7,7 +7,7 @@ def registry = '705249/lol'
 def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
 def registryCredential = 'dockerhub'
 
-job("MS1-MVN-BUILD") {
+job("ms1-commit") {
     label l1
     jdk("jdk11")
 
@@ -35,7 +35,7 @@ job("MS1-MVN-BUILD") {
             onlyIfSuccessful()
         }
         downstreamParameterized {
-            trigger('ms1-docker-commit-test') {
+            trigger('ms1-docker-commit') {
                 parameters {
                     predefinedProp('name', 'ms1')
                 }
@@ -45,20 +45,20 @@ job("MS1-MVN-BUILD") {
 }
 
 
-job('ms1-docker-commit-test') {
+job('ms1-docker-commit') {
     label d1
     steps {
-        copyArtifacts("MS1-MVN-BUILD") {
+        copyArtifacts("ms1-commit") {
         }
 
         shell('docker build . -t ' + image)
     }
     publishers {
-        downstream('ms1-docker-deploy-test', 'UNSTABLE')
+        downstream('ms1-docker-deploy', 'SUCCESS')
 
     }
 }
-job('ms1-docker-deploy-test') {
+job('ms1-docker-deploy') {
     label d1
 
     wrappers {
@@ -76,7 +76,7 @@ job('ms1-docker-deploy-test') {
     }
     publishers {
         downstreamParameterized {
-            trigger('ssh-connection') {
+            trigger('ssh-connection-check') {
                 parameters {
                     predefinedProp('VERSION', "${BUILD_NUMBER}")
                     predefinedProp('MS', ms1)
@@ -86,7 +86,7 @@ job('ms1-docker-deploy-test') {
     }
 
 }
-job('ssh-connection') {
+job('ssh-connection-check') {
     label d1 //only on this node
 
 
@@ -192,7 +192,7 @@ job('prod-deploy') {
         shell('echo $OPTION')
 
         shell("""
-if  [ "\$OPTION" -e "stop" ];
+if  [ "\$OPTION" -eq "stop" ]
 then
     exit 0
 else
@@ -208,5 +208,23 @@ fi
     }
 
 
+}
+
+nestedView ('Seminar-Pipelines') {
+    views {
+        buildPipelineView('ms1-commit pipeline') {
+            displayedBuilds(5)
+            selectedJob('ms1-commit')
+            alwaysAllowManualTrigger()
+            showPipelineParameters()
+        }
+        buildPipelineView('ms2-commit pipeline') {
+            displayedBuilds(5)
+            selectedJob('ms2-commit')
+            alwaysAllowManualTrigger()
+            showPipelineParameters()
+        }
+
+    }
 }
 
