@@ -196,7 +196,7 @@ job('prod-deploy') {
         shell('echo $OPTION')
         shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell("""
-if  [ "\$OPTION" -ne "stop" ]; then
+if  [ "\$$OPTION" -ne "stop" ]; then
     rm -f .env
     printf \"VERSION=${BUILD_NUMBER}\" >> .env
     ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
