@@ -213,6 +213,9 @@ job('demo') {
     steps {
         shell('sleep 5 && echo DEMO')
     }
+    publishers {
+        downstream('finish', "SUCCESS")
+    }
 }
 
 job('prod-deploy') {
@@ -252,8 +255,18 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DO
 """)
 
     }
+    publishers {
+        downstream('finish', "SUCCESS")
+    }
 
 
+}
+job('finish'){
+    label any
+    blockOn(['demo','prod-deploy'])
+    steps{
+        shell('echo FINISH')
+    }
 }
 
 nestedView('Seminar-Pipelines') {
