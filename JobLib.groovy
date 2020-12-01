@@ -135,7 +135,7 @@ printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'docker login -u $DOCKER_USER -p $DOCKER_PW && cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
 """)
 
     }
@@ -165,7 +165,6 @@ fi
 """)
     }
     publishers {
-//        downstream("prod-deploy", "SUCCESS")
         buildPipelineTrigger('prod-deploy') {
 
         }
@@ -194,7 +193,7 @@ job('prod-deploy') {
 
     steps {
         shell('echo $OPTION')
-        shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
+
         shell("""
 if  [ "\$$OPTION" -ne "stop" ]; then
     rm -f .env
@@ -202,7 +201,7 @@ if  [ "\$$OPTION" -ne "stop" ]; then
     ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
     scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
     scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
-    ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
+    ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'docker login -u \$DOCKER_USER -p \$DOCKER_PW && cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
 fi
 """)
 
