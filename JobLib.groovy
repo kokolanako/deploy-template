@@ -173,11 +173,15 @@ fi
 }
 job('prod-deploy') {
     label d1 //only on this node
+
     scm {
         git {
             remote { url(deploy) }
             branch('jobDSL')
         }
+    }
+    parameters{
+        choiceParam('OPTION',['deploy to prod','stop'])
     }
     wrappers {
         credentialsBinding {
@@ -185,6 +189,7 @@ job('prod-deploy') {
         }
     }
     steps {
+        shell('echo $OPTION')
 
         shell("""
 rm -f .env
