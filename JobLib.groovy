@@ -192,7 +192,7 @@ job('prod-deploy') {
         shell('echo $OPTION')
 
         shell("""
-if  [ "\$OPTION" -e "stop"];
+if  [ "\$OPTION" -e "stop" ];
 then
     exit 0
 else
