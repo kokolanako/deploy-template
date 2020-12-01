@@ -202,8 +202,8 @@ fi
 """)
     }
     publishers {
-        buildPipelineTrigger('prod-deploy') {
-
+        buildPipelineTrigger('prod-deploy') 
+        mailer('Polina.Mrachkovskaya@kisters.de', true, true)
         }
     }
 
