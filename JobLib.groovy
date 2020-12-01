@@ -207,8 +207,7 @@ fi
         mailer('Polina.Mrachkovskaya@kisters.de', true, true)
     }
 }
-jog('demo'){
-
+job('demo'){
     shell('sleep 5 && echo DEMO')
 }
 
