@@ -228,8 +228,8 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DO
         downstreamParameterized {
             trigger('test-curl') {
                 parameters {
-                    predefinedProp('VERSION', ${VERSION})
-                    predefinedProp('MS', ${MS})
+                    predefinedProp('VERSION', '${VERSION}')
+                    predefinedProp('MS', '${MS}')
                 }
             }
         }
