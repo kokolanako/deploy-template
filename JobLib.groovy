@@ -123,10 +123,12 @@ job('test-deploy') {
     wrappers {
         credentialsBinding {
             file('test', 'remote-deploy')
+            usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
         }
     }
-    steps {
 
+    steps {
+        shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell("""
 rm -f .env
 printf \"VERSION=${BUILD_NUMBER}\" >> .env
@@ -186,16 +188,15 @@ job('prod-deploy') {
     wrappers {
         credentialsBinding {
             file('test', 'remote-deploy')
+            usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
         }
     }
+
     steps {
         shell('echo $OPTION')
-
+        shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell("""
-if  [ "\$OPTION" -eq "stop" ]
-then
-    exit 0
-else
+if  [ "\$OPTION" -ne "stop" ]; then
     rm -f .env
     printf \"VERSION=${BUILD_NUMBER}\" >> .env
     ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
