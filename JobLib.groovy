@@ -85,10 +85,10 @@ job("ms2-commit") {
 }
 
 for (String ms: msArr){
-    def image="${dockerhub_registry}:"+"${BUILD_NUMBER}"
     job(ms-"-docker-commit") {
         label d1
         steps {
+            def image="\${dockerhub_registry}:"+"${BUILD_NUMBER}"
             copyArtifacts(ms+"-commit") {
             }
             shell("echo $image")
@@ -96,7 +96,13 @@ for (String ms: msArr){
         }
         publishers {
             def next=ms+"-docker-deploy"
-            downstream(next, 'SUCCESS')
+            downstreamParameterized {
+                trigger(next) {
+                    parameters {
+                        predefinedProp('dockerhub_registry','$dockerhub_registry')
+                    }
+                }
+            }
 
         }
     }
@@ -110,6 +116,7 @@ for (String ms: msArr){
             }
         }
         steps {
+            def image="\${dockerhub_registry}:"+"${BUILD_NUMBER}"
             shell('echo $DOCKER_USER')
             shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
             shell('docker push ' + image)
