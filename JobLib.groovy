@@ -283,6 +283,12 @@ nestedView('Seminar-Pipelines') {
             alwaysAllowManualTrigger()
             showPipelineParameters()
         }
+        buildPipelineView('ms2-commit pipeline') {
+            displayedBuilds(5)
+            selectedJob('ssh-connection-check')
+            alwaysAllowManualTrigger()
+            showPipelineParameters()
+        }
 
     }
 }
