@@ -208,6 +208,7 @@ fi
     }
 }
 job('demo'){
+    label l1
     shell('sleep 5 && echo DEMO')
 }
 
