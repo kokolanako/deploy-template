@@ -192,12 +192,17 @@ job('prod-deploy') {
         shell('echo $OPTION')
 
         shell("""
+if  [ "\$OPTION" -e "stop"];
+then
+    exit 0
+else
 rm -f .env
 printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
+fi
 """)
 
     }
