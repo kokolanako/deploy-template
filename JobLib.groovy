@@ -4,9 +4,12 @@ def l1 = 'build-slave-maven'
 def d1 = 'en-compile-stage-docker'
 def ms1 = 'ms1'
 def ms2 = 'ms2'
-def registry = '705249/lol'
-def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
-def registryCredential = 'dockerhub'
+def msArr=['ms1','ms2']
+def ms1_dockerhub = '705249/lol'
+def ms2_dockerhub = '705249/be'
+//def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
+//def registryCredential = 'dockerhub'
+
 
 job("ms1-commit") {
     label l1
@@ -38,7 +41,7 @@ job("ms1-commit") {
         downstreamParameterized {
             trigger('ms1-docker-commit') {
                 parameters {
-                    predefinedProp('name', 'ms1')
+                    predefinedProp('dockerhub_registry', ms1_dockerhub)
                 }
             }
         }
@@ -74,55 +77,100 @@ job("ms2-commit") {
         downstreamParameterized {
             trigger('ms1-docker-commit') {
                 parameters {
-                    predefinedProp('name', 'ms1')
+                    predefinedProp('dockerhub_registry', ms2_dockerhub)
                 }
             }
         }
     }
 }
 
-
-job('ms1-docker-commit') {
-    label d1
-    steps {
-        copyArtifacts("ms1-commit") {
+for (String ms: msArr){
+    def image='${dockerhub_registry}:'+${BUILD_NUMBER}
+    job(ms-'-docker-commit') {
+        label d1
+        steps {
+            copyArtifacts(ms+"-commit") {
+            }
+            shell("echo $image")
+            shell('docker build . -t '+image )
         }
-
-        shell('docker build . -t ' + image)
-    }
-    publishers {
-        downstream('ms1-docker-deploy', 'SUCCESS')
-
-    }
-}
-job('ms1-docker-deploy') {
-    label d1
-
-    wrappers {
-        credentialsBinding {
-            usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
+        publishers {
+            def next=ms+'-docker-deploy'
+            downstream(next, 'SUCCESS')
 
         }
     }
-    steps {
-        shell('echo $DOCKER_USER')
-        shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
-        shell('docker push ' + image)
-        shell('docker logout')
-        shell('docker rmi ' + image)
-    }
-    publishers {
-        downstreamParameterized {
-            trigger('ssh-connection-check') {
-                parameters {
-                    predefinedProp('VERSION', "${BUILD_NUMBER}")
-                    predefinedProp('MS', ms1)
+    job(ms+'-docker-deploy') {
+        label d1
+
+        wrappers {
+            credentialsBinding {
+                usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
+
+            }
+        }
+        steps {
+            shell('echo $DOCKER_USER')
+            shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
+            shell('docker push ' + image)
+            shell('docker logout')
+            shell('docker rmi ' + image)
+        }
+        publishers {
+            downstreamParameterized {
+                trigger('ssh-connection-check') {
+                    parameters {
+                        predefinedProp('VERSION', "${BUILD_NUMBER}")
+                        predefinedProp('MS', ms)
+                    }
                 }
             }
         }
-    }
 
+    }
 }
+
+//job('ms1-docker-commit') {
+//    label d1
+//    steps {
+//        copyArtifacts("ms1-commit") {
+//        }
+//
+//        shell('docker build . -t ' + image)
+//    }
+//    publishers {
+//        downstream('ms1-docker-deploy', 'SUCCESS')
+//
+//    }
+//}
+//job('ms1-docker-deploy') {
+//    label d1
+//
+//    wrappers {
+//        credentialsBinding {
+//            usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
+//
+//        }
+//    }
+//    steps {
+//        shell('echo $DOCKER_USER')
+//        shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
+//        shell('docker push ' + image)
+//        shell('docker logout')
+//        shell('docker rmi ' + image)
+//    }
+//    publishers {
+//        downstreamParameterized {
+//            trigger('ssh-connection-check') {
+//                parameters {
+//                    predefinedProp('VERSION', "${BUILD_NUMBER}")
+//                    predefinedProp('MS', ms1)
+//                }
+//            }
+//        }
+//    }
+//
+//}
 job('ssh-connection-check') {
     label d1 //only on this node
 
@@ -137,7 +185,7 @@ job('ssh-connection-check') {
             trigger('test-deploy') {
                 parameters {
                     predefinedProp('VERSION', "${BUILD_NUMBER}")
-                    predefinedProp('MS', ms1)
+                    predefinedProp('MS', ${MS})
                 }
             }
         }
@@ -172,12 +220,19 @@ printf \"VERSION=${BUILD_NUMBER}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d $ms1'
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d ${MS}'
 """)
 
     }
     publishers {
-        downstream("test-curl", "SUCCESS")
+        downstreamParameterized {
+            trigger('test-curl') {
+                parameters {
+                    predefinedProp('VERSION', ${VERSION})
+                    predefinedProp('MS', ${MS})
+                }
+            }
+        }
 
     }
 
@@ -202,16 +257,29 @@ fi
 """)
     }
     publishers {
-        buildPipelineTrigger('prod-deploy')
-        downstream('demo', "SUCCESS")
+        mailer(EMAIL_TO, true, true)
+        buildPipelineTrigger('prod-deploy'){
+            parameters {
+                predefinedProp('VERSION', ${VERSION})
+                predefinedProp('MS', ${MS})
+            }
+        }
 
-        mailer('Polina.Mrachkovskaya@kisters.de', true, true)
+        downstreamParameterized {
+            trigger('demo') {
+                parameters {
+                    predefinedProp('VERSION', ${VERSION})
+                    predefinedProp('MS', ${MS})
+                }
+            }
+        }
+
     }
 }
 job('demo') {
     label l1
     steps {
-        shell('sleep 5 && echo DEMO')
+        shell('sleep 5 && echo DEMO && echo building ${MS} with version ${VERSION}')
     }
     publishers {
         downstream('finish', "SUCCESS")
@@ -283,12 +351,12 @@ nestedView('Seminar-Pipelines') {
             alwaysAllowManualTrigger()
             showPipelineParameters()
         }
-        buildPipelineView('ms-deployment') {
-            displayedBuilds(5)
-            selectedJob('ssh-connection-check')
-            alwaysAllowManualTrigger()
-            showPipelineParameters()
-        }
+//        buildPipelineView('ms-deployment') {
+//            displayedBuilds(5)
+//            selectedJob('ssh-connection-check')
+//            alwaysAllowManualTrigger()
+//            showPipelineParameters()
+//        }
 
     }
 }
