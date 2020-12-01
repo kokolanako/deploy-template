@@ -86,7 +86,7 @@ job("ms2-commit") {
 
 for (String ms: msArr){
     def image="\${dockerhub_registry}:"+"${BUILD_NUMBER}"
-    job(ms-'-docker-commit') {
+    job(ms-"-docker-commit") {
         label d1
         steps {
             copyArtifacts(ms+"-commit") {
@@ -100,7 +100,7 @@ for (String ms: msArr){
 
         }
     }
-    job(ms+'-docker-deploy') {
+    job(ms+"-docker-deploy") {
         label d1
 
         wrappers {
