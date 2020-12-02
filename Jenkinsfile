@@ -108,6 +108,8 @@ pipeline {
                         body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
             }
         }
+        parallel{
+
         stage('Deploy to Prod-System') {
             agent {
                 node {
@@ -152,6 +154,13 @@ pipeline {
             }
 
         }
+            stage('Deploy to Demo'){
+                steps{
+
+                }
+            }
+        }
+
 
         stage('Test against Prod-System') {
             steps {

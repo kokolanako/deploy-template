@@ -75,7 +75,7 @@ job("ms2-commit") {
             onlyIfSuccessful()
         }
         downstreamParameterized {
-            trigger('ms1-docker-commit') {
+            trigger('ms2-docker-commit') {
                 parameters {
                     predefinedProp('dockerhub_registry', ms2_dockerhub)
                 }
@@ -270,7 +270,7 @@ fi
     publishers {
         extendedEmail {
             recipientList(EMAIL_TO)
-            defaultSubject('Jenkins')
+            defaultSubject('Jenkins $JOB_NAME')
             defaultContent(BUILD_URL)
             contentType('text/html')
             triggers {
