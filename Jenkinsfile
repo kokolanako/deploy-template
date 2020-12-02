@@ -110,9 +110,11 @@ pipeline {
                         body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
             }
         }
-        parallel {
+        stage('Parallel Deployment') {
 
-            stage('Deploy to Prod-System') {
+            parallel {
+
+                stage('Deploy to Prod-System') {
 //            agent
 //                    {
 //                node {
@@ -130,39 +132,40 @@ pipeline {
 //                }
 //            }
 
-                steps {
+                    steps {
 
-                    script {
-                        def input = input message: 'User input required',
-                                parameters: [choice(name: 'Proceed deployment to PROD? ', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
-                        echo input
-                        if (input == 'NO') {
-                            error "The build was stopped by ${username}"
+                        script {
+                            def input = input message: 'User input required',
+                                    parameters: [choice(name: 'Proceed deployment to PROD? ', choices: ['NO', 'YES'], description: 'Choose "yes" if you want to deploy this build in production')]
+                            echo input
+                            if (input == 'NO') {
+                                error "The build was stopped by ${username}"
+                            }
+
                         }
 
-                    }
-
 //                echo "User: ${username} triggered the deployment stage"
-                    sh 'pwd'
-                    sh 'ls -la' //woher hat -l-2 .env?
-                    unstash 'env'
-                    unstash 'compose'
-                    withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
+                        sh 'pwd'
+                        sh 'ls -la' //woher hat -l-2 .env?
+                        unstash 'env'
+                        unstash 'compose'
+                        withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
 
-                        sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir -p ${env.KISTERS_DOCKER_HOME}/yay'"
-                        sh "scp -i $test .env root@en-cdeval-prod:${env.KISTERS_DOCKER_HOME}/yay"
-                        sh "scp -i $test docker-compose.yml root@en-cdeval-prod:${env.KISTERS_DOCKER_HOME}/yay"
-                        sh "ssh -i $test -T root@en-cdeval-prod 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose up -d ${params.MS}'"
+                            sh "ssh -i $test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf ${env.KISTERS_DOCKER_HOME}/yay && mkdir -p ${env.KISTERS_DOCKER_HOME}/yay'"
+                            sh "scp -i $test .env root@en-cdeval-prod:${env.KISTERS_DOCKER_HOME}/yay"
+                            sh "scp -i $test docker-compose.yml root@en-cdeval-prod:${env.KISTERS_DOCKER_HOME}/yay"
+                            sh "ssh -i $test -T root@en-cdeval-prod 'cd ${env.KISTERS_DOCKER_HOME}/yay && docker-compose up -d ${params.MS}'"
+                        }
                     }
+
                 }
 
-            }
-
-            stage('Deploy to Demo') {
-                steps {
-                    script {
-                        sleep(5)
-                        echo 'DEMO deployment as a parallel stage'
+                stage('Deploy to Demo') {
+                    steps {
+                        script {
+                            sleep(5)
+                            echo 'DEMO deployment as a parallel stage'
+                        }
                     }
                 }
             }
