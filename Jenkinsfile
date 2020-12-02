@@ -156,7 +156,10 @@ pipeline {
         }
             stage('Deploy to Demo'){
                 steps{
-
+                    script{
+                        sleep(5)
+                        echo 'DEMO as a parallel stage'
+                    }
                 }
             }
         }
