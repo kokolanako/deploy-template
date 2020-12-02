@@ -276,9 +276,9 @@ fi
             triggers {
                 success{
                     attachBuildLog(true)
-                }
-                sendTo {
-                    recipientList()
+                    sendTo {
+                        recipientList()
+                    }
                 }
 
             }
