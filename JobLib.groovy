@@ -268,7 +268,21 @@ fi
 """)
     }
     publishers {
-        mailer(EMAIL_TO, true, true)
+        extendedEmail {
+            recipientList(EMAIL_TO)
+            defaultSubject('Jenkins')
+            defaultContent(BUILD_URL)
+            contentType('text/html')
+            triggers {
+                success{
+                    attachBuildLog(true)
+                }
+                sendTo {
+                    recipientList()
+                }
+
+            }
+        }
         buildPipelineTrigger('prod-deploy'){
             parameters {
                 predefinedProp('VERSION', '${VERSION}')
