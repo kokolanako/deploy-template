@@ -194,8 +194,8 @@ job('ssh-connection-check') {
         downstreamParameterized {
             trigger('test-deploy') {
                 parameters {
-                    predefinedProp('VERSION', "")
-                    predefinedProp('MS', "")
+                    predefinedProp('VERSION', '$VERSION')
+                    predefinedProp('MS', '$MS')
                 }
             }
         }
