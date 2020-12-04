@@ -129,7 +129,7 @@ echo \${dockerhub_registry}""")
             downstreamParameterized {
                 trigger('ssh-connection-check') {
                     parameters {
-                        predefinedProp('VERSION', "${BUILD_NUMBER}")
+                        predefinedProp('VERSION', "\${BUILD_NUMBER}")
                         predefinedProp('MS', ms)
                     }
                 }
@@ -194,8 +194,8 @@ job('ssh-connection-check') {
         downstreamParameterized {
             trigger('test-deploy') {
                 parameters {
-                    predefinedProp('VERSION', "${BUILD_NUMBER}")
-                    predefinedProp('MS', '$MS')
+                    predefinedProp('VERSION', "")
+                    predefinedProp('MS', "")
                 }
             }
         }
@@ -203,7 +203,7 @@ job('ssh-connection-check') {
 }
 
 def KISTERS_DOCKER_HOME = "/opt/kisters/docker"
-def BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/${JOB_NAME}/${BUILD_NUMBER}/console"
+def BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/\${JOB_NAME}/\${BUILD_NUMBER}/console"
 def EMAIL_TO = "Polina.Mrachkovskaya@kisters.de"
 
 
@@ -227,7 +227,7 @@ job('test-deploy') {
         shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell("""
 rm -f .env
-printf \"VERSION=${BUILD_NUMBER}\" >> .env
+printf \"VERSION=\${VERSION}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
