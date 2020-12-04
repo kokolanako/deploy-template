@@ -42,6 +42,7 @@ job("ms1-commit") {
             trigger('ms1-docker-commit') {
                 parameters {
                     predefinedProp('dockerhub_registry', ms1_dockerhub)
+                    predefinedProp('VERSION', '${BUILD_NUMBER}')
                 }
             }
         }
@@ -78,6 +79,7 @@ job("ms2-commit") {
             trigger('ms2-docker-commit') {
                 parameters {
                     predefinedProp('dockerhub_registry', ms2_dockerhub)
+                    predefinedProp('VERSION', '${BUILD_NUMBER}')
                 }
             }
         }
@@ -88,7 +90,7 @@ for (String ms: msArr){
     job(ms+"-docker-commit") {
         label d1
         steps {
-            def image="\${dockerhub_registry}:"+"${BUILD_NUMBER}"
+            def image="\${dockerhub_registry}:\${VERSION}"
             copyArtifacts(ms+"-commit") {
             }
             shell("echo $image")
@@ -102,6 +104,7 @@ echo \${dockerhub_registry}""")
                 trigger(next) {
                     parameters {
                         predefinedProp('dockerhub_registry','$dockerhub_registry')
+                        predefinedProp('VERSION', '${VERSION}')
                     }
                 }
             }
@@ -118,7 +121,7 @@ echo \${dockerhub_registry}""")
             }
         }
         steps {
-            def image="\${dockerhub_registry}:"+"${BUILD_NUMBER}"
+            def image="\${dockerhub_registry}:\${VERSION}"
             shell('echo $DOCKER_USER')
             shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
             shell('docker push ' + image)
@@ -129,7 +132,7 @@ echo \${dockerhub_registry}""")
             downstreamParameterized {
                 trigger('ssh-connection-check') {
                     parameters {
-                        predefinedProp('VERSION', "\${BUILD_NUMBER}")
+                        predefinedProp('VERSION', '${VERSION}')
                         predefinedProp('MS', ms)
                     }
                 }
