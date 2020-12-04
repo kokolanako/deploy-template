@@ -343,7 +343,7 @@ if  [ "\$OPTION" = "stop" ]; then
 fi
 echo \$OPTION
 rm -f .env
-printf \"VERSION=${BUILD_NUMBER}\" >> .env
+printf \"VERSION=\${VERSION}\" >> .env
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
 scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
