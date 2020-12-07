@@ -126,7 +126,6 @@ job('deploy-staging') {
         }
     }
     steps {
-        shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell("""
 rm -f .env
 printf \"VERSION=\${VERSION}\" >> .env
@@ -259,13 +258,13 @@ nestedView('Seminar-Pipelines') {
     views {
         buildPipelineView('ms1-commit pipeline') {
             displayedBuilds(5)
-            selectedJob('ms1-commit')
+            selectedJob('ms1-build-app')
             alwaysAllowManualTrigger()
             showPipelineParameters()
         }
         buildPipelineView('ms2-commit pipeline') {
             displayedBuilds(5)
-            selectedJob('ms2-commit')
+            selectedJob('ms2-build-app')
             alwaysAllowManualTrigger()
             showPipelineParameters()
         }
