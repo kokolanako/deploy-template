@@ -7,30 +7,23 @@ def ms2 = 'ms2'
 def msArr=['ms1','ms2']
 def ms1_dockerhub = '705249/lol'
 def ms2_dockerhub = '705249/be'
-//def image = "705249/lol:${BUILD_NUMBER}"//always seed job number
-//def registryCredential = 'dockerhub'
 
 
-job("ms1-commit") {
+
+job("ms1-build-app") {
     label l1
     jdk("jdk11")
-
-//    customWorkspace ("${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
         git {
             remote { url(be) }
             branch('ms1')
         }
     }
-
     steps {
         maven {
             mavenInstallation('maven-3.6.3')
-            goals('clean package') //Java 11
+            goals('clean package')
         }
-        shell('ls -la')
-        shell('pwd')
-
     }
     publishers {
         archiveArtifacts {
@@ -39,7 +32,7 @@ job("ms1-commit") {
             onlyIfSuccessful()
         }
         downstreamParameterized {
-            trigger('ms1-docker-commit') {
+            trigger('ms1-build-image') {
                 parameters {
                     predefinedProp('dockerhub_registry', ms1_dockerhub)
                     predefinedProp('VERSION', '${BUILD_NUMBER}')
@@ -48,26 +41,20 @@ job("ms1-commit") {
         }
     }
 }
-job("ms2-commit") {
+job("ms2-build-app") {
     label l1
     jdk("jdk11")
-
-//    customWorkspace ("${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}")
     scm {
         git {
             remote { url(be) }
             branch('ms2')
         }
     }
-
     steps {
         maven {
             mavenInstallation('maven-3.6.3')
-            goals('clean package') //Java 11
+            goals('clean package')
         }
-        shell('ls -la')
-        shell('pwd')
-
     }
     publishers {
         archiveArtifacts {
@@ -76,7 +63,7 @@ job("ms2-commit") {
             onlyIfSuccessful()
         }
         downstreamParameterized {
-            trigger('ms2-docker-commit') {
+            trigger('ms2-build-image') {
                 parameters {
                     predefinedProp('dockerhub_registry', ms2_dockerhub)
                     predefinedProp('VERSION', '${BUILD_NUMBER}')
@@ -87,19 +74,25 @@ job("ms2-commit") {
 }
 
 for (String ms: msArr){
-    job(ms+"-docker-commit") {
-        label d1
+    job(ms+"-build-image") {
+        label d1 //agent with installed docker
+        wrappers {
+            credentialsBinding {
+                usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
+            }
+        }
         steps {
             def image="\${dockerhub_registry}:\${VERSION}"
-            copyArtifacts(ms+"-commit") {
+            copyArtifacts(ms+"-build-app") {
             }
-            shell("echo $image")
-            shell("""
-echo \${dockerhub_registry}""")
             shell("docker build . -t "+image )
+            shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
+            shell('docker push ' + image)
+            shell('docker logout')
+            shell('docker rmi ' + image)
         }
         publishers {
-            def next=ms+"-docker-deploy"
+            def next="deploy-staging"
             downstreamParameterized {
                 trigger(next) {
                     parameters {
@@ -108,101 +101,9 @@ echo \${dockerhub_registry}""")
                     }
                 }
             }
-
         }
     }
-    job(ms+"-docker-deploy") {
-        label d1
 
-        wrappers {
-            credentialsBinding {
-                usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
-
-            }
-        }
-        steps {
-            def image="\${dockerhub_registry}:\${VERSION}"
-            shell('echo $DOCKER_USER')
-            shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
-            shell('docker push ' + image)
-            shell('docker logout')
-            shell('docker rmi ' + image)
-        }
-        publishers {
-            downstreamParameterized {
-                trigger('ssh-connection-check') {
-                    parameters {
-                        predefinedProp('VERSION', '${VERSION}')
-                        predefinedProp('MS', ms)
-                    }
-                }
-            }
-        }
-
-    }
-}
-
-//job('ms1-docker-commit') {
-//    label d1
-//    steps {
-//        copyArtifacts("ms1-commit") {
-//        }
-//
-//        shell('docker build . -t ' + image)
-//    }
-//    publishers {
-//        downstream('ms1-docker-deploy', 'SUCCESS')
-//
-//    }
-//}
-//job('ms1-docker-deploy') {
-//    label d1
-//
-//    wrappers {
-//        credentialsBinding {
-//            usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
-//
-//        }
-//    }
-//    steps {
-//        shell('echo $DOCKER_USER')
-//        shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
-//        shell('docker push ' + image)
-//        shell('docker logout')
-//        shell('docker rmi ' + image)
-//    }
-//    publishers {
-//        downstreamParameterized {
-//            trigger('ssh-connection-check') {
-//                parameters {
-//                    predefinedProp('VERSION', "${BUILD_NUMBER}")
-//                    predefinedProp('MS', ms1)
-//                }
-//            }
-//        }
-//    }
-//
-//}
-job('ssh-connection-check') {
-    label d1 //only on this node
-
-
-    steps {
-        shell('echo $MS')
-        remoteShell('root@en-cdeval-test:22') {//SSH Plugin
-            command('hostname')
-        }
-    }
-    publishers {
-        downstreamParameterized {
-            trigger('test-deploy') {
-                parameters {
-                    predefinedProp('VERSION', '$VERSION')
-                    predefinedProp('MS', '$MS')
-                }
-            }
-        }
-    }
 }
 
 def KISTERS_DOCKER_HOME = "/opt/kisters/docker"
@@ -210,8 +111,8 @@ def BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/\${JOB_NAME}/\${BUILD
 def EMAIL_TO = "Polina.Mrachkovskaya@kisters.de"
 
 
-job('test-deploy') {
-    label d1 //only on this node
+job('deploy-staging') {
+    label null
     scm {
         git {
             remote { url(deploy) }
@@ -224,9 +125,7 @@ job('test-deploy') {
             usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
         }
     }
-
     steps {
-        shell("echo \${MS}")
         shell('docker login -u $DOCKER_USER -p $DOCKER_PW')
         shell("""
 rm -f .env
@@ -236,25 +135,22 @@ scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCK
 scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
 ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test "cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d \$MS"
 """)
-
     }
     publishers {
         downstreamParameterized {
-            trigger('test-curl') {
+            trigger('test-staging') {
                 parameters {
                     predefinedProp('VERSION', '${VERSION}')
                     predefinedProp('MS', '$MS')
                 }
             }
         }
-
     }
-
 }
 
 
-job('test-curl') {
-    label d1 //only on this node ??
+job('test-staging') {
+    label null
 
     wrappers {
         credentialsBinding {
@@ -286,26 +182,24 @@ fi
 
             }
         }
-        buildPipelineTrigger('prod-deploy'){
+        buildPipelineTrigger('deploy-prod'){
             parameters {
                 predefinedProp('VERSION', '${VERSION}')
                 predefinedProp('MS', '${MS}')
             }
         }
-
         downstreamParameterized {
-            trigger('demo') {
+            trigger('deploy-demo') {
                 parameters {
                     predefinedProp('VERSION', '${VERSION}')
                     predefinedProp('MS', '$MS')
                 }
             }
         }
-
     }
 }
-job('demo') {
-    label l1
+job('deploy-demo') {
+    label null
     steps {
         shell('sleep 5 && echo DEMO && echo building ${MS} with version ${VERSION}')
     }
@@ -314,8 +208,8 @@ job('demo') {
     }
 }
 
-job('prod-deploy') {
-    label d1 //only on this node
+job('deploy-prod') {
+    label null
 
     scm {
         git {
@@ -332,10 +226,7 @@ job('prod-deploy') {
             usernamePassword('DOCKER_USER', 'DOCKER_PW', 'dockerhub')
         }
     }
-
     steps {
-        shell('echo $OPTION')
-
         shell("""
 if  [ "\$OPTION" = "stop" ]; then
     echo "The pipeline was stopped intentionally. The user did not want to deploy to production."
@@ -359,7 +250,6 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod "cd $KISTERS_DO
 }
 job('finish'){
     blockOnUpstreamProjects()
-//    blockOn(['demo','prod-deploy'])
     steps{
         shell('echo FINISH')
     }
@@ -379,12 +269,7 @@ nestedView('Seminar-Pipelines') {
             alwaysAllowManualTrigger()
             showPipelineParameters()
         }
-//        buildPipelineView('ms-deployment') {
-//            displayedBuilds(5)
-//            selectedJob('ssh-connection-check')
-//            alwaysAllowManualTrigger()
-//            showPipelineParameters()
-//        }
+
 
     }
 }
