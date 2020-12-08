@@ -98,6 +98,22 @@ pipeline {
                 echo "FINISH"
             }
         }
+        //Parallel steps
+//        stage('Run') {
+//            steps {
+//                script {
+//                    parallel([
+//                            'parallelTask1_Name': {
+//                                any code you like
+//                            },
+//                            'parallelTask2_Name': {
+//                                any other code you like
+//                            },
+//
+//                    ])
+//                }
+//            }
+//        }
     }
 }
 //        stage('Test against Prod-System') {
