@@ -36,7 +36,7 @@ job("ms1-build-app") {
                 parameters {
                     predefinedProp('dockerhub_registry', ms1_dockerhub)
                     predefinedProp('VERSION', '${BUILD_NUMBER}')
-                    predefinedProp('CUSTOM_PORT', "W8081")
+                    predefinedProp('CUSTOM_PORT', "8081")
 
                 }
             }
@@ -69,7 +69,7 @@ job("ms2-build-app") {
                 parameters {
                     predefinedProp('dockerhub_registry', ms2_dockerhub)
                     predefinedProp('VERSION', '${BUILD_NUMBER}')
-                    predefinedProp('CUSTOM_PORT', "W8082")
+                    predefinedProp('CUSTOM_PORT', "8082")
                 }
             }
         }
@@ -102,7 +102,7 @@ for (String ms: msArr){
                     parameters {
                         predefinedProp('dockerhub_registry','$dockerhub_registry')
                         predefinedProp('VERSION', '${VERSION}')
-                        redefinedProp('CUSTOM_PORT', '$CUSTOM_PORT')
+//                        redefinedProp('CUSTOM_PORT', '$CUSTOM_PORT')
                     }
                 }
             }
@@ -146,7 +146,7 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test "cd $KISTERS_DO
                 parameters {
                     predefinedProp('VERSION', '${VERSION}')
                     predefinedProp('MS', '$MS')
-                    redefinedProp('CUSTOM_PORT', '${CUSTOM_PORT}')
+//                    redefinedProp('CUSTOM_PORT', '${CUSTOM_PORT}')
                 }
             }
         }
@@ -192,7 +192,7 @@ fi
             parameters {
                 predefinedProp('VERSION', '${VERSION}')
                 predefinedProp('MS', '${MS}')
-                redefinedProp('CUSTOM_PORT', '${CUSTOM_PORT}')
+//                redefinedProp('CUSTOM_PORT', '${CUSTOM_PORT}')
             }
         }
         downstreamParameterized {
@@ -200,7 +200,7 @@ fi
                 parameters {
                     predefinedProp('VERSION', '${VERSION}')
                     predefinedProp('MS', '$MS')
-                    redefinedProp('CUSTOM_PORT', '${CUSTOM_PORT}')
+//                    redefinedProp('CUSTOM_PORT', '${CUSTOM_PORT}')
                 }
             }
         }
