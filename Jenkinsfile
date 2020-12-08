@@ -113,11 +113,12 @@ pipeline {
             }
         }
         stage('Test against Prod-System') {
-            steps{
+            steps {
                 echo "FINISH"
             }
         }
-
+    }
+}
 //        stage('Test against Prod-System') {
 //            steps {
 //                script {
@@ -165,4 +166,3 @@ pipeline {
 //            }
 //        }
 //    }
-}
