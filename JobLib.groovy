@@ -160,7 +160,7 @@ job('test-staging') {
         shell("""
 sleep 4
 port=3000
-if [ "\${MS} = "ms1" ];
+if [ "\${MS}" = "ms1" ];
 then
     port=8081
 else
