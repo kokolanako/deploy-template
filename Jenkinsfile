@@ -1,11 +1,6 @@
 pipeline {
     agent any
-//            {
-//        node {
-//            label any
-//            customWorkspace "workspace/${JOB_NAME}/${BUILD_NUMBER}"
-//        }
-//    }
+
     environment {
         KISTERS_DOCKER_HOME = "/opt/kisters/docker"
         BUILD_URL = "https://jenkins.energy-dev.kisters.de/job/${JOB_NAME}/${BUILD_NUMBER}/console"
@@ -19,19 +14,6 @@ pipeline {
         string(name: 'CUSTOM_PORT')
     }
 
-
-//        stage('SSH Connection') {
-//            environment {
-//                CD_SECRET_KEY = credentials('jenkins-cd-key')//better withCredentials
-//            }
-//
-//            steps {
-//                sh 'pwd'
-//                sh 'ls -la'
-//                sh "ssh -i ${env.CD_SECRET_KEY} -v -T -o StrictHostKeyChecking=no root@en-cdeval-prod hostname"
-//            }
-//
-//        }
     stages {
         stage('Deploy Staging') {
             steps {
@@ -55,8 +37,7 @@ pipeline {
         stage('Test Staging') {
             steps {
                 script {
-                    retry(3) {    // if fails then retries again
-
+                    retry(3) {
                         sleep(5)
                         withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
                             def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:${params.CUSTOM_PORT}/test?country=Aus' -o /dev/null", returnStdout: true)
@@ -66,11 +47,10 @@ pipeline {
                             }
                         }
                     }
-//                    http://localhost:8081/rest/data?country=Aus&sector=private&year=2018
                 }
             }
         }
-        stage('Send Email') {
+        stage('Notify Approver') {
             steps {
                 emailext subject: "[Jenkins]${currentBuild.fullDisplayName}", to: "${env.EMAIL_TO}", from: "jenkins@mail.com",
                         body: "<a href='${env.BUILD_URL}'>Click to approve</a>"
