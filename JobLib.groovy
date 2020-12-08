@@ -211,6 +211,7 @@ fi
 }
 job('deploy-demo') {
     label null
+
     steps {
         shell('sleep 5 && echo DEMO && echo building ${MS} with version ${VERSION}')
     }
@@ -221,7 +222,9 @@ job('deploy-demo') {
 
 job('deploy-prod') {
     label null
-
+    parameters {
+        choiceParam('Deploy', ['YES', 'NO'])
+    }
     scm {
         git {
             remote { url(deploy) }
@@ -238,6 +241,7 @@ job('deploy-prod') {
         }
     }
     steps {
+        shell( "echo  \$Deploy")
         shell("""
 if  [ "\$OPTION" = "stop" ]; then
     echo "The pipeline was stopped intentionally. The user did not want to deploy to production."
