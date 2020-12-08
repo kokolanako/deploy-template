@@ -76,7 +76,7 @@ pipeline {
             }
         }
         stage('Parallel Deployment') {
-
+            failFast true
             parallel {
 
                 stage('Deploy Production') {
