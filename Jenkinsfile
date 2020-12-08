@@ -57,7 +57,7 @@ pipeline {
                     retry(3) {    // if fails then retries again
 
                         withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
-                            sleep(4)
+                            sleep(5)
                             def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
                             echo statusCode
                             if (statusCode != "200") {
