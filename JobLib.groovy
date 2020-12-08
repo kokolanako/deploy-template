@@ -165,7 +165,7 @@ if [ "\${MS}" = "ms1" ]; then
 else
     port=8082
 fi
-echo \$MS
+echo \${MS}
 echo \$port
 statusCode=\$(curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null)
 if [ "\$statusCode" -ne "200" ]; then 
