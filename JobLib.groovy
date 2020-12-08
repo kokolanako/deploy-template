@@ -169,7 +169,7 @@ job('test-staging') {
         shell("""
 sleep 4
 echo "\${CUSTOM_PORT}"
-statusCode=\$(curl -sL -w '%{http_code}' 'http://en-cdeval-test:\${CUSTOM_PORT}/test?country=Aus' -o /dev/null)
+statusCode=\$(curl -sL -w '%{http_code}' "http://en-cdeval-test:\${CUSTOM_PORT}/test?country=Aus" -o /dev/null)
 if [ "\$statusCode" -ne "200" ]; then 
     exit 1 
 fi
