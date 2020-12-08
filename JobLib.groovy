@@ -222,9 +222,6 @@ job('deploy-demo') {
 
 job('deploy-prod') {
     label null
-    parameters {
-        choiceParam('Deploy', ['YES', 'NO'])
-    }
     scm {
         git {
             remote { url(deploy) }
@@ -232,7 +229,7 @@ job('deploy-prod') {
         }
     }
     parameters {
-        choiceParam('OPTION', ['deploy to prod', 'stop'])
+        choiceParam('OPTION', ['deploy', 'stop'])
     }
     wrappers {
         credentialsBinding {
@@ -241,7 +238,7 @@ job('deploy-prod') {
         }
     }
     steps {
-        shell( "echo  \$Deploy")
+        shell( "echo  \$OPTION")
         shell("""
 if  [ "\$OPTION" = "stop" ]; then
     echo "The pipeline was stopped intentionally. The user did not want to deploy to production."
