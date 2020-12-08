@@ -102,7 +102,7 @@ for (String ms: msArr){
                     parameters {
                         predefinedProp('dockerhub_registry','$dockerhub_registry')
                         predefinedProp('VERSION', '${VERSION}')
-                        redefinedProp('CUSTOM_PORT', '${CUSTOM_PORT}')
+                        redefinedProp('CUSTOM_PORT', '$CUSTOM_PORT')
                     }
                 }
             }
