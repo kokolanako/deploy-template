@@ -16,6 +16,7 @@ pipeline {
     parameters {
         string(name: 'MS')
         string(name: 'VERSION')
+        string(name: 'CUSTOM_PORT')
     }
 
 
@@ -56,9 +57,9 @@ pipeline {
                 script {
                     retry(3) {    // if fails then retries again
 
+                        sleep(5)
                         withCredentials(bindings: [sshUserPrivateKey(credentialsId: 'jenkins-cd-key', keyFileVariable: 'test')]) {
-                            sleep(5)
-                            def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null", returnStdout: true)
+                            def statusCode = sh(script: "curl -sL -w '%{http_code}' 'http://en-cdeval-test:${params.CUSTOM_PORT}/test?country=Aus' -o /dev/null", returnStdout: true)
                             echo statusCode
                             if (statusCode != "200") {
                                 error "Curl command was not successful, it delivered status code ${statusCode}"
