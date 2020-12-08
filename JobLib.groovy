@@ -36,6 +36,7 @@ job("ms1-build-app") {
                 parameters {
                     predefinedProp('dockerhub_registry', ms1_dockerhub)
                     predefinedProp('VERSION', '${BUILD_NUMBER}')
+                    predefinedProp('PORT', '8081')
                 }
             }
         }
@@ -67,6 +68,7 @@ job("ms2-build-app") {
                 parameters {
                     predefinedProp('dockerhub_registry', ms2_dockerhub)
                     predefinedProp('VERSION', '${BUILD_NUMBER}')
+                    predefinedProp('PORT', '8082')
                 }
             }
         }
@@ -82,6 +84,7 @@ for (String ms: msArr){
             }
         }
         steps {
+            shell("echo \${PORT}")
             def image="\${dockerhub_registry}:\${VERSION}"
             copyArtifacts(ms+"-build-app") {
             }
@@ -98,6 +101,7 @@ for (String ms: msArr){
                     parameters {
                         predefinedProp('dockerhub_registry','$dockerhub_registry')
                         predefinedProp('VERSION', '${VERSION}')
+                        redefinedProp('PORT', '${PORT}')
                     }
                 }
             }
@@ -141,6 +145,7 @@ ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test "cd $KISTERS_DO
                 parameters {
                     predefinedProp('VERSION', '${VERSION}')
                     predefinedProp('MS', '$MS')
+                    redefinedProp('PORT', '${PORT}')
                 }
             }
         }
@@ -159,14 +164,7 @@ job('test-staging') {
     steps {
         shell("""
 sleep 4
-port=3000
-if [ "\${MS}" = "ms1" ]; then
-    port=8081
-else
-    port=8082
-fi
-echo \${MS}
-echo \$port
+echo "\${PORT}"
 statusCode=\$(curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null)
 if [ "\$statusCode" -ne "200" ]; then 
     exit 1 
@@ -193,6 +191,7 @@ fi
             parameters {
                 predefinedProp('VERSION', '${VERSION}')
                 predefinedProp('MS', '${MS}')
+                redefinedProp('PORT', '${PORT}')
             }
         }
         downstreamParameterized {
@@ -200,6 +199,7 @@ fi
                 parameters {
                     predefinedProp('VERSION', '${VERSION}')
                     predefinedProp('MS', '$MS')
+                    redefinedProp('PORT', '${PORT}')
                 }
             }
         }
