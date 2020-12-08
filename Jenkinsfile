@@ -93,7 +93,7 @@ pipeline {
                 }
             }
         }
-        stage('Test against Prod-System') {
+        stage('Finish') {
             steps {
                 echo "FINISH"
             }
