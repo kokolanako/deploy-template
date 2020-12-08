@@ -36,7 +36,8 @@ job("ms1-build-app") {
                 parameters {
                     predefinedProp('dockerhub_registry', ms1_dockerhub)
                     predefinedProp('VERSION', '${BUILD_NUMBER}')
-                    predefinedProp('PORT', '8081')
+                    predefinedProp('PORT', "8081")
+
                 }
             }
         }
@@ -68,7 +69,7 @@ job("ms2-build-app") {
                 parameters {
                     predefinedProp('dockerhub_registry', ms2_dockerhub)
                     predefinedProp('VERSION', '${BUILD_NUMBER}')
-                    predefinedProp('PORT', '8082')
+                    predefinedProp('PORT', "8081")
                 }
             }
         }
