@@ -129,10 +129,10 @@ job('deploy-staging') {
         shell("""
 rm -f .env
 printf \"VERSION=\${VERSION}\" >> .env
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
-scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
-scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test "cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d \$MS"
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test 'rm -rf $KISTERS_DOCKER_HOME/test && mkdir $KISTERS_DOCKER_HOME/test'
+scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-test:$KISTERS_DOCKER_HOME/test
+scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-test:$KISTERS_DOCKER_HOME/test
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-test "cd $KISTERS_DOCKER_HOME/test && docker-compose up -d \$MS"
 """)
     }
     publishers {
@@ -242,10 +242,10 @@ fi
 echo \$OPTION
 rm -f .env
 printf \"VERSION=\${VERSION}\" >> .env
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/yay && mkdir $KISTERS_DOCKER_HOME/yay'
-scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
-scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/yay
-ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod "cd $KISTERS_DOCKER_HOME/yay && docker-compose up -d \$MS"
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod 'rm -rf $KISTERS_DOCKER_HOME/test && mkdir $KISTERS_DOCKER_HOME/test'
+scp -i \$test -o StrictHostKeyChecking=no .env root@en-cdeval-prod:$KISTERS_DOCKER_HOME/test
+scp -i \$test -o StrictHostKeyChecking=no docker-compose.yml root@en-cdeval-prod:$KISTERS_DOCKER_HOME/test
+ssh -i \$test -T -o StrictHostKeyChecking=no root@en-cdeval-prod "cd $KISTERS_DOCKER_HOME/test && docker-compose up -d \$MS"
 """)
 
     }
