@@ -159,6 +159,14 @@ job('test-staging') {
     steps {
         shell("""
 sleep 4
+port=3000
+if [ "\${MS} = "ms1" ];
+then
+    port=8081
+else
+    port=8082
+fi
+echo $port
 statusCode=\$(curl -sL -w '%{http_code}' 'http://en-cdeval-test:8081/test?country=Aus' -o /dev/null)
 if [ "\$statusCode" -ne "200" ]; then 
     exit 1 
